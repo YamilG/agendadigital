@@ -1,0 +1,30 @@
+%search:Event%
+<!doctype html>
+<html >
+  <head>
+      <title>Events</title>
+      <meta charset="UTF-8">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"> 
+      <link rel="stylesheet" href="style.css">     
+
+  </head>
+  <body>
+      <div class="container">
+          %repeat%
+          <div class="col-sm-6 col-md-4">
+
+          <div class="thumbnail">
+            <img src="%banner:image%" />
+            <div class="caption">
+                <h1 class="titleText">%name%</h1> 
+                <p>%date%</p> 
+                <p class="descriptionText">%description%</p> 
+                <p>%tags%</p>
+                <p><a href="event/%id%" class="btn btn-primary" role="button">View</a>
+            </div>
+          </div>
+          </div>
+          %endrepeat%
+      </div>
+  </body>
+</html>
