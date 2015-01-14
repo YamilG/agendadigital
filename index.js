@@ -4,14 +4,16 @@ var fs = require('fs');
 var replace = require("replace");
 var Parse = require('parse').Parse;
 
-var server = http.createServer(function (req, res) {
-	res.writeHead(200, {"Content-Type": "text/html"})
-    res.write("hi");
-	res.end()
-    console.log("ok");
-    
+var express = require('express');
+var app = express();
 
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
 
-})
+app.get('/', function(request, response) {
+  response.send('Hello World!');
+});
 
-server.listen(5000)
+app.listen(app.get('port'), function() {
+  console.log("Node app is running at localhost:" + app.get('port'));
+});
