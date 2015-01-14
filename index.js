@@ -8,7 +8,31 @@ app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
-  response.send('Hello World!');
+    
+    Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+    
+    var wallpaper = Parse.Object.extend("Wallpaper");
+    var query = new Parse.Query(wallpaper);
+
+    var page = "<h1>Hello World!</h1>";
+    query.find({
+      success: function(users) {
+          //response.write("Hello World :) ?");
+          page = page + "<ul>";
+          for (var i = 0; i < users.length; ++i) {
+            page = page + "<li>"+ users[i].get('illustrator') + "</li>";
+          }
+          page = page + "</ul>";
+          
+          response.send(page);
+      },
+        error: function(error) {
+            response.write("Error: " + error.code + " " + error.message);
+        }
+    });
+    
+    
+    
 });
 
 app.listen(app.get('port'), function() {
