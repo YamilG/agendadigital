@@ -9,7 +9,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
     
-    Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+    Parse.initialize("rtduL3AiJ6Gt4g74rzlmKm09i2OlJ23GJPkVmEiv", "3sKYmLhuq79HxCTpErTTJG7o9LzewszO63f1Azos");
     
     var wallpaper = Parse.Object.extend("Wallpaper");
     var query = new Parse.Query(wallpaper);
