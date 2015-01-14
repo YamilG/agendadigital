@@ -6,6 +6,8 @@ var Parse = require('parse').Parse;
 
 var server = http.createServer(function (req, res) {
 	
+    console.log("ok");
+    
     Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
     
 	parseado = url.parse(req.url, true)
@@ -196,6 +198,7 @@ var server = http.createServer(function (req, res) {
                       //response.write("Error: " + error.code + " " + error.message);
 
                       res.end()
+                      
                   }
               });
           
