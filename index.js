@@ -2,13 +2,13 @@ var url = require('url')
 var http = require('http')
 var fs = require('fs');
 //var replace = require("replace");
-var Parse = require('parse').Parse;
+//var Parse = require('parse').Parse;
 
 console.log("Node app is running at localhost: 5000");
 
 var server = http.createServer(function (req, res) {
 
-    Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+    //Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
     parseado = url.parse(req.url, true)
 	dir = parseado.pathname.split('/')
 	
