@@ -8,7 +8,7 @@ var server = http.createServer(function (req, res) {
 	
     Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
     
-	res.writeHead(404, {"Content-Type": "text/html"})
+	res.writeHead(202, {"Content-Type": "text/html"})
     res.write("error");
     res.end;
 
