@@ -1,16 +1,18 @@
+var url = require('url')
+var http = require('http')
+//var fs = require('fs');
 //var replace = require("replace");
 var Parse = require('parse').Parse;
 
-var express = require('express');
-var app = express();
+var server = http.createServer(function (req, res) {
+	
+    Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+    
+	res.writeHead(404, {"Content-Type": "text/html"})
+    res.write("error");
+    res.end;
 
-app.set('port', (process.env.PORT || 5000));
-app.use(express.static(__dirname + '/public'));
 
-app.get('/', function(request, response) {
-  response.send('Hello World!');
-});
+})
 
-app.listen(app.get('port'), function() {
-  console.log("Node app is running at localhost:" + app.get('port'));
-});
+server.listen(5000)
