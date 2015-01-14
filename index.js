@@ -1,3 +1,5 @@
+var url = require('url');
+var http = require('http');
 var fs = require('fs');
 var replace = require("replace");
 var Parse = require('parse').Parse;
