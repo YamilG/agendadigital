@@ -1,54 +1,16 @@
-var url = require('url')
-var http = require('http')
-var fs = require('fs');
+
 //var replace = require("replace");
-//var Parse = require('parse').Parse;
+var Parse = require('parse').Parse;
+var express = require('express');
+var app = express();
 
-console.log("Node app is running at localhost: 5000");
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
 
-var server = http.createServer(function (req, res) {
+app.get('/', function(request, response) {
+  response.send('Hello World!');
+});
 
-    //Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
-    parseado = url.parse(req.url, true)
-	dir = parseado.pathname.split('/')
-	
-	var direct = parseado.pathname.replace(/\//, '');
-    
-	if(direct.search(".png") > -1 ) {
-		var img = fs.readFileSync(direct);
-     	res.writeHead(200, {"Content-Type": "image/png" });
-		res.write(img);
-	 	res.end()
-   } else if(direct.search(".jpg") > -1 ) {
-		var img = fs.readFileSync(direct);
-     	res.writeHead(200, {"Content-Type": "image/jpg" });
-		res.write(img);
-	 	res.end()
-   } else  if (direct.search(".css") > -1 ) {
-	   
-	   fs.readFile(direct, 'utf8', function (err,data) {
-		  if (err) {
-			  return console.log(err);
-		  }
-		  res.writeHead(200, {"Content-Type": "text/css"})
-		  res.write(data);
-		  res.end()
-	 	});
-
-   } else {
-       /*
-	  fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
-		  res.writeHead(200, {"Content-Type": "text/html"})
-		  res.write(data);
-		  res.end()
-          
-	  });
-      */
-       res.writeHead(200, {"Content-Type": "text/html"})
-		  res.write("fail");
-		  res.end()
-   }
-
-})
-
-server.listen(5000)
+app.listen(app.get('port'), function() {
+  console.log("Node app is running at localhost:" + app.get('port'));
+});
