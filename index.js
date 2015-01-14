@@ -7,6 +7,11 @@ var Parse = require('parse').Parse;
 var server = http.createServer(function (req, res) {
 	
     Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+    parseado = url.parse(req.url, true)
+	dir = parseado.pathname.split('/')
+	
+	var direct = parseado.pathname.replace(/\//, '');
+    
     
 	if(direct.search(".png") > -1 ) {
 		var img = fs.readFileSync(direct);
