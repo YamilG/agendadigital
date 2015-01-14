@@ -1,5 +1,5 @@
 
-//var replace = require("replace");
+var replace = require("replace");
 var Parse = require('parse').Parse;
 var express = require('express');
 var app = express();
