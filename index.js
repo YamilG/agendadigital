@@ -4,7 +4,7 @@ var fs = require('fs');
 var replace = require("replace");
 var async = require("async");
 var Parse = require('parse').Parse;
-
+var parseInit = require(__dirname+"/parsekeys.js");
 //var express = require('express');
 //var app = express();
 
@@ -272,7 +272,7 @@ function getFeaturedEvent(eventId, data, res, callback) {
 
 var server = http.createServer(function (req, res) {
 
-  Parse.initialize("fg0ZfyAMCK6qnm2URlPUL7cmhOHpX4JUxeX4ZHsq", "A4eeWOJvusBCL8xvYDZfsD2ETgIopkM5swzGluCa");
+  Parse.initialize(parseInit.appKeys.appid, parseInit.appKeys.jsid);
 
   parseado = url.parse(req.url, true)
   dir = parseado.pathname.split('/')
@@ -389,7 +389,7 @@ var server = http.createServer(function (req, res) {
               function (err, result) {
                 // result now equals 'done'
               });
-              
+
 
             } else {
 
