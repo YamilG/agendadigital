@@ -38,6 +38,10 @@ p.organizer {
   float: left;
 }
 
+.event-avatar img{
+    width: 100%;
+}
+
 .info {
   float: left;
   width: 60%;
