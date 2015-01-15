@@ -1,30 +1,91 @@
 %search:Event%
-<!doctype html>
-<html >
+<!DOCTYPE html>
+<html lang="es-419">
   <head>
-      <title>Events</title>
-      <meta charset="UTF-8">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"> 
-      <link rel="stylesheet" href="style.css">     
-
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Agenda Digital - Toda la información sobre los eventos de tecnología que ocurren en Honduras" />
+    <meta name="keywords" content="eventos, tecnología, Honduras, Tegucigalpa, San Pedro Sula, events, tech, startups, code, programming, design, diseño, programación" />
+    <title>Agenda Digital</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
   </head>
   <body>
-      <div class="container">
-          %repeat%
-          <div class="col-sm-6 col-md-4">
 
-          <div class="thumbnail">
-            <img src="%banner:image%" />
-            <div class="caption">
-                <h1 class="titleText">%name%</h1> 
-                <p>%date%</p> 
-                <p class="descriptionText">%description%</p> 
-                <p>%tags%</p>
-                <p><a href="event/%id%" class="btn btn-primary" role="button">View</a>
+    <div class="container">
+
+      <header>
+        <section id="search-box">
+          <form method="get" action="#">
+            <input type="text" id="search" name="search" placeholder="Buscar..." />
+          </form>
+        </section>
+
+        <section id="logo">
+          <h1>Agenda Digital</h1>
+        </section>
+      </header>
+
+      <main>
+        <aside>
+          <h3>Evento Destacado</h3>
+
+          <a href="#">
+            <div class="event">
+              <div class="event-avatar">
+              </div>
+
+              <div class="info">
+                <h2>Game On! Hackathon Nombre Largo</h2>
+                <p class="organizer">Yamil Gonzales</p>
+
+                <p class="date">12 de Noviembre 2015</p>
+              </div>
+
             </div>
-          </div>
-          </div>
+          </a>
+        </aside>
+
+        <section>
+          <h3>Próximos Eventos</h3>
+            
+            %repeat%
+            
+            <a href="#">
+            <div class="event">
+              <div class="event-avatar">
+                  <img src="%banner:image%" />
+              </div>
+
+              <div class="info">
+                <h2>%name%</h2>
+                <p class="organizer">Yamil Gonzales</p>
+
+                <p class="date">%date%</p>
+              </div>
+            </div>
+          </a>
+            
           %endrepeat%
-      </div>
+            
+
+          <a href="#"><button type="button" class="btn">Ver Todos</button></a>
+
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <ul>
+        <li><a href="#">Ingresar</a></li>
+        <li><a href="#">Registrarme como organizador</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </footer>
+
+  <script src="//use.typekit.net/sif5wrp.js"></script>
+  <script>try{Typekit.load();}catch(e){}</script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script src="js/main.js"></script>
   </body>
 </html>
