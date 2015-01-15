@@ -1,21 +1,20 @@
-%search:Event%
 <!doctype html>
 <html >
   <head>
       <meta charset="UTF-8">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">     
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
   </head>
   <body>
       <div class="container">
       <div class="thumbnail">
-          <img src="%banner:image%" />
-          <h1>%name%</h1> 
-          <p>%date%</p> 
-          <p>%description%</p> 
-          <img src="https://maps.googleapis.com/maps/api/staticmap?center=%place:geoPoint:latitude%,
-                    %place:geoPoint:longitude%&zoom=11&size=300x200">
+          <img src="%Event:banner:image%" />
+          <h1>%Event:name%</h1>
+          <p>%Event:date%</p>
+          <p>%Event:description%</p>
+          <img src="https://maps.googleapis.com/maps/api/staticmap?center=%Event:place:geoPoint:latitude%,
+                    %pEvent:lace:geoPoint:longitude%&zoom=11&size=300x200">
 
-          <p>%tags%</p>
+          <p>%Event:tags%</p>
       </div>
       </div>
   </body>

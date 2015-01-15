@@ -1,4 +1,3 @@
-%search:Event%
 <!DOCTYPE html>
 <html lang="es-419">
   <head>
@@ -30,16 +29,17 @@
         <aside>
           <h3>Evento Destacado</h3>
 
-          <a href="event/%id%">
+          <a href="event/%Featured:id%">
             <div class="event">
               <div class="event-avatar">
+                <img src="%Featured:bannerMini:image%" />
               </div>
 
               <div class="info">
-                <h2>Game On! Hackathon Nombre Largo</h2>
+                <h2>%Featured:name%</h2>
                 <p class="organizer">Yamil Gonzales</p>
 
-                <p class="date">12 de Noviembre 2015</p>
+                <p class="date">%Featured:date%</p>
               </div>
 
             </div>
@@ -47,27 +47,28 @@
         </aside>
 
         <section>
+
           <h3>Próximos Eventos</h3>
-            
+
             %repeat%
 
-            <a href="event/%id%">
+            <a href="event/%Event:id%">
             <div class="event">
               <div class="event-avatar">
-                  <img src="%banner:image%" />
+                  <img src="%Event:bannerMini:image%" />
               </div>
 
               <div class="info">
-                <h2>%name%</h2>
+                <h2>%Event:name%</h2>
                 <p class="organizer">Yamil Gonzales</p>
 
-                <p class="date">%date%</p>
+                <p class="date">%Event:date%</p>
               </div>
             </div>
           </a>
-            
+
           %endrepeat%
-            
+
 
           <a href="#"><button type="button" class="btn">Ver Todos</button></a>
 

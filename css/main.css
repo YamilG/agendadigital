@@ -36,6 +36,7 @@ p.organizer {
   border-radius: 8px;
   margin-right: 10px;
   float: left;
+    overflow: hidden;
 }
 
 .event-avatar img{
