@@ -468,7 +468,7 @@ var server = http.createServer(function (req, res) {
                 res.write(data);
                 res.end()
                 callback(null, 'done');
-              } ],
+              } ]
             );
 
 
@@ -493,7 +493,7 @@ var server = http.createServer(function (req, res) {
                 res.end()
                 callback(null, 'done');
               }
-              ],
+              ]
             );
 
 
