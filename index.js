@@ -3,6 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var replace = require("replace");
 var async = require("async");
+var qs = require('querystring');
 var Parse = require('parse').Parse;
 var parseInit = require(__dirname+"/parsekeys.js");
 //var express = require('express');
@@ -144,25 +145,31 @@ function getEvents(eventId, data, res, callback) {
               dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
             }
 
-          } else if (res2[1] == "geoPoint") {
+
+
+          }
+          else if (res2[1] == "geoPoint") {
 
             if (events[i].get(res2[0]) != null) {
               dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", events[i].get(res2[1])[res2[2]] );
             }
 
-          } else {
+          }
+          else {
 
-            if (res2[1] != "repeat" && res2[1] != "endrepeat") {
+            //if (res2[1] != "repeat" && res2[1] != "endrepeat") {
+
+
+            if (res2[1] == "id") {
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
+            } else {
               if (events[i].get(res2[1]) != null) {
-
-                if (res2[1] == "id") {
-                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
-                } else {
-                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? events[i].get(res2[1]) : "" );
-                }
-
+                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? events[i].get(res2[1]) : "" );
               }
             }
+
+
+            //}
 
           }
 
@@ -269,6 +276,89 @@ function getFeaturedEvent(eventId, data, res, callback) {
   });
 }
 
+function setSignup(data, res, formData) {
+
+
+  res.writeHead(200, {'Content-Type': 'text/html'});
+
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+
+
+  var user = new Parse.User();
+  user.set("username", formData.username);
+  user.set("password", formData.password);
+  user.set("email", formData.email);
+
+  // other fields can be set just like with Parse.Object
+  user.set("name", formData.name);
+
+
+  user.signUp(null, {
+    success: function(user) {
+      // Hooray! Let them use the app now.
+
+      var re = /%(.*?)%/g;
+      var i = 0;
+
+      while( jsreap = re.exec(dataStr) ) {
+        var res2 = jsreap[1].split(":");
+
+        dataStr = dataStr.replace("%"+res2[0] +"%", formData[res2[0]] != null ? formData[res2[0]] : "" );
+
+      }
+      res.write(dataStr);
+      res.end()
+
+
+    },
+    error: function(user, error) {
+      // Show the error message somewhere and let the user try again.
+      console.log("Error: " + error.code + " " + error.message);
+      res.write("Error: " + error.code + " " + error.message);
+      res.end()
+    }
+  });
+
+}
+
+function setLogIn(data, res, formData) {
+
+  res.writeHead(200, {'Content-Type': 'text/html'});
+
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+
+
+
+  Parse.User.logIn(formData.username, formData.password, {
+    success: function(user) {
+      // Do stuff after successful login.
+      var re = /%(.*?)%/g;
+      var i = 0;
+
+      while( jsreap = re.exec(dataStr) ) {
+        var res2 = jsreap[1].split(":");
+
+        dataStr = dataStr.replace("%"+res2[0] +"%", user.get(res2[0]) != null ? user.get(res2[0]) : "" );
+
+      }
+      res.write(dataStr);
+      res.end()
+    },
+    error: function(user, error) {
+      // The login failed. Check error to see why.
+      console.log("Error: " + error.code + " " + error.message);
+      res.write("Error: " + error.code + " " + error.message);
+      res.end()
+    }
+  });
+
+
+}
+
 
 var server = http.createServer(function (req, res) {
 
@@ -326,7 +416,8 @@ var server = http.createServer(function (req, res) {
         res.writeHead(404, {'Content-Type': 'text/html'});
         fs.createReadStream('404.html').pipe(res);
         return false;
-      }});
+      }
+    });
 
 
       fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
@@ -335,37 +426,54 @@ var server = http.createServer(function (req, res) {
           return console.log(err);
         }
 
-        if (dir[1] == "index") {
-
-
-
-
-
-          async.series([
-            function(callback){
-              res.writeHead(200, {"Content-Type": "text/html"})
-
-              callback(null, 'one');
-            },
-            function(callback){
-              getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-            },
-            function(callback){
-              getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
-            },
-            function(callback){
-              // arg1 now equals 'three'
-              res.write(data);
-              res.end()
-              callback(null, 'done');
+        if(req.method === "POST") {
+          console.log("request");
+          var requestBody = '';
+          req.on('data', function(data) {
+            requestBody += data;
+            if(requestBody.length > 1e7) {
+              res.writeHead(413, 'Request Entity Too Large', {'Content-Type': 'text/html'});
+              res.end('<!doctype html><html><head><title>413</title></head><body>413: Request Entity Too Large</body></html>');
             }
-            ],
-            function (err, result) {
-              // result now equals 'done'
-            });
+          });
+          req.on('end', function() {
+            var formData = qs.parse(requestBody);
+
+            if (dir[1] == "signupconf") {
+              setSignup(data, res, formData)
+            } else if (dir[1] == "loginconf") {
+              setLogIn(data, res, formData)
+            }
+
+          });
+        }
+        else {
+
+          if (dir[1] == "index") {
+
+            async.series(
+              [function(callback){
+                res.writeHead(200, {"Content-Type": "text/html"})
+
+                callback(null, 'one');
+              },
+              function(callback){
+                getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+              },
+              function(callback){
+                getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
+              },
+              function(callback){
+                // arg1 now equals 'three'
+                res.write(data);
+                res.end()
+                callback(null, 'done');
+              } ],
+            );
 
 
-          } else if (dir[1] == "event") {
+          }
+          else if (dir[1] == "event") {
 
             async.series([
               function(callback){
@@ -386,25 +494,44 @@ var server = http.createServer(function (req, res) {
                 callback(null, 'done');
               }
               ],
-              function (err, result) {
-                // result now equals 'done'
-              });
+            );
 
 
+          }
+          else if (dir[1] == "signupconf" || dir[1] == "loginconf") {
+
+            res.writeHead(413, 'Request Entity Too Large', {'Content-Type': 'text/html'});
+            res.end('<!doctype html><html><head><title>413</title></head><body>413: Request Entity Too Large</body></html>');
+
+          }
+          else {
+
+            //Not workibg
+            var currentUser = Parse.User.current();
+            if (currentUser) {
+              // do stuff with the user
+              console.log("There's a user");
             } else {
-
+              // show the signup or login page
             }
 
-            /*
             res.writeHead(200, {"Content-Type": "text/html"})
             res.write(data);
             res.end()
-            */
-          });
+          }
 
+          /*
+          res.writeHead(200, {"Content-Type": "text/html"})
+          res.write(data);
+          res.end()
+          */
         }
 
+      });
 
 
-      })
-      server.listen(process.env.PORT || 5000)
+  }
+
+
+})
+server.listen(process.env.PORT || 5000)
