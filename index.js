@@ -8,6 +8,9 @@ var Parse = require('parse').Parse;
 var parseInit = require(__dirname+"/parsekeys.js");
 //var express = require('express');
 //var app = express();
+var session		=	require('express-session');
+
+var sess;
 
 console.log("Hello Cruel World");
 console.log("Node app is running at localhost: 5000");
@@ -331,8 +334,6 @@ function setLogIn(data, res, formData) {
   dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
 
-
-
   Parse.User.logIn(formData.username, formData.password, {
     success: function(user) {
       // Do stuff after successful login.
@@ -359,6 +360,78 @@ function setLogIn(data, res, formData) {
 
 }
 
+function getCurrentUser (data, res, req, callback) {
+    sess=req.session;
+    
+    var dataStr = data.toString();
+    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+    
+    var classname = "User"
+    var currentUser = Parse.User.current();
+    if (currentUser) {
+       
+    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
+      var foundRepeat  = "";
+        
+        foundRepeat
+        while( jsreap = re1.exec(dataStr) ) {
+
+        foundRepeat = true;
+
+      }
+
+
+      if (foundRepeat) {
+
+          dataStr = dataStr.replace("%if currentuser%", "" );
+          dataStr = dataStr.replace("%endif%", "" );
+          
+          var re = /%(.*?)%/gi;
+
+          while( jsreap = re.exec(dataStr) ) {
+
+            var res2 = jsreap[1].split(":");
+
+            if (res2[0] == classname ) {
+
+
+                  if (res2[1] == "id") {
+                    dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
+                  } else {
+                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.get(res2[1]));
+                  }
+
+              
+
+            }
+          
+
+        }
+          
+        
+        
+        
+    }
+    
+    
+    } else {
+        // show the signup or login page
+        
+        dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+        var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
+        while( jsreap = re1.exec(dataStr) ) {
+
+          dataStr = dataStr.replace(re1 , "" );
+
+        }
+        
+    }
+    
+    data = dataStr;
+    
+    callback(data);
+}
 
 var server = http.createServer(function (req, res) {
 
@@ -428,6 +501,7 @@ var server = http.createServer(function (req, res) {
 
         if(req.method === "POST") {
           console.log("request");
+            sess=req.session;
           var requestBody = '';
           req.on('data', function(data) {
             requestBody += data;
@@ -449,7 +523,7 @@ var server = http.createServer(function (req, res) {
         }
         else {
 
-          if (dir[1] == "index") {
+            if (dir[1] == "index") {
 
             async.series(
               [function(callback){
@@ -462,6 +536,9 @@ var server = http.createServer(function (req, res) {
               },
               function(callback){
                 getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
+              },
+               function(callback){
+                getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'four'); } );
               },
               function(callback){
                 // arg1 now equals 'three'
@@ -500,21 +577,15 @@ var server = http.createServer(function (req, res) {
           }
           else if (dir[1] == "signupconf" || dir[1] == "loginconf") {
 
-            res.writeHead(413, 'Request Entity Too Large', {'Content-Type': 'text/html'});
-            res.end('<!doctype html><html><head><title>413</title></head><body>413: Request Entity Too Large</body></html>');
-
+             res.writeHead(302, {
+                  'Location': 'login'
+                  //add other headers here...
+              });
+              res.end();
+              
           }
           else {
-
-            //Not workibg
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-              // do stuff with the user
-              console.log("There's a user");
-            } else {
-              // show the signup or login page
-            }
-
+            
             res.writeHead(200, {"Content-Type": "text/html"})
             res.write(data);
             res.end()

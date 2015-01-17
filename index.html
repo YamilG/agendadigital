@@ -12,14 +12,26 @@
   <body>
 
     <div class="container">
-
       <header>
         <section id="search-box">
           <form method="get" action="#">
             <input type="text" id="search" name="search" placeholder="Buscar..." />
           </form>
         </section>
-
+          
+          %if currentuser%
+          <nav class="navbar navbar-default">
+              <div class="container-fluid">
+                  <div class="navbar-header">
+                      <a class="navbar-brand" href="#">
+                          <img alt="Brand" src="public/mr.png" width="30px">
+                          <span>%User:name%</span>
+                      </a>
+                  </div>
+              </div>
+          </nav>
+          %endif%
+          
         <section id="logo">
           <h1>Agenda Digital</h1>
         </section>
