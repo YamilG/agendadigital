@@ -23,6 +23,16 @@ h2 {
   padding: 0;
 }
 
+main ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+main ul li a {
+  display: block;
+}
+
 p.organizer {
   margin: 0;
   padding-top: 10px;
@@ -36,7 +46,7 @@ p.organizer {
   border-radius: 8px;
   margin-right: 10px;
   float: left;
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .event-avatar img{
@@ -66,7 +76,7 @@ a .event:hover {
   background: #f9f9f9;
 }
 
-#search-box {
+#search-box, .event-description {
   display: none;
 }
 
@@ -90,7 +100,7 @@ aside .event {
   padding: 15px;
 }
 
-section .event {
+main .event {
   border-bottom: 1px solid #E6E6E6;
 }
 
@@ -143,13 +153,155 @@ footer ul li a {
 }
 
 @media (min-width: 640px) {
+  .event-description {
+    display: block;
+  }
 
+  .featured {
+    height: 100%;
+  }
 }
 
 @media (min-width: 768px) {
 
+  body {
+    border-top: 5px solid gray;
+  }
+
+  .events {
+    margin-bottom: 20px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  main ul li a {
+    border-bottom: 1px dotted #E6E6E6;
+  }
+
+  #search-box {
+    display: block;
+    padding: 30px 0;
+  }
+
+  #search-box form {
+    width: 50%;
+    float: right;
+  }
+
+  #search-box input {
+    padding-left: 15px;
+  }
+
+  #logo h1 {
+    text-align: left;
+  }
+
+  section {
+    width: 50%;
+  }
+
+  aside {
+    width: 45%;
+  }
+
+  aside, #search-box {
+    float: right;
+  }
+
+  main > section, #logo {
+    float: left;
+  }
+
+  header, main {
+    overflow: auto;
+  }
+
+  .featured > .event-avatar {
+    width: 100%;
+    float: none;
+    margin-bottom: 20px;
+    height: auto;
+  }
+
+  .featured > .info {
+    width: 100%;
+    float: none;
+  }
+
+  footer ul {
+    width: 430px;
+    margin: 0 auto;
+    overflow: auto;
+  }
+
+  footer ul li {
+    float: left;
+    margin: 0 20px;
+  }
+
+  footer ul li a {
+    text-align: center;
+  }
+
+  .event-description {
+    line-height: 1.6em;
+  }
+
+  main a .event {
+    border-bottom: none;
+  }
 }
 
 @media (min-width: 992px) {
+  .container {
+    max-width: 100%;
+  }
 
+  main > section {
+    width: 75%;
+  }
+
+  main > section {
+    overflow: auto;
+  }
+
+  main ul li {
+    width: 49%;
+    float: left;
+  }
+
+  main ul li:nth-child(odd){
+    margin-right: 2%;
+  }
+
+  main > section .event {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  main > section a {
+    display: block;
+  }
+
+/*
+  main ul li a:last-child .event, main ul li:last-child a {
+    border-bottom: none;
+  }*/
+
+  .events {
+    overflow: auto;
+  }
+
+  aside {
+    width: 23%;
+  }
+
+  main .more {
+    float: none;
+    margin: 0 auto;
+    width: 30%;
+  }
 }
