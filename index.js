@@ -47,6 +47,7 @@ function getEvents(eventId, data, res, callback) {
 
   var eventT = Parse.Object.extend(classname);
   var query = new Parse.Query(eventT);
+    query.ascending("date");
 
   if (eventId) {
     query.equalTo("objectId", eventId);
@@ -296,14 +297,6 @@ function getFeaturedEvent(eventId, data, res, callback) {
 
 function setSignup(res, formData, callback) {
 
-
-  //res.writeHead(200, {'Content-Type': 'text/html'});
-
-  //var dataStr = data.toString();
-  //dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-
-
-
   var user = new Parse.User();
   user.set("username", formData.username);
   user.set("password", formData.password);
@@ -316,21 +309,7 @@ function setSignup(res, formData, callback) {
   user.signUp(null, {
     success: function(user) {
       // Hooray! Let them use the app now.
-      /*
-      var re = /%(.*?)%/g;
-      var i = 0;
-
-      while( jsreap = re.exec(dataStr) ) {
-      var res2 = jsreap[1].split(":");
-
-      dataStr = dataStr.replace("%"+res2[0] +"%", formData[res2[0]] != null ? formData[res2[0]] : "" );
-
-    }
-    */
-    //res.write(dataStr);
-    //res.end()
-
-    callback();
+        callback();
   },
   error: function(user, error) {
     // Show the error message somewhere and let the user try again.
@@ -343,35 +322,14 @@ function setSignup(res, formData, callback) {
 }
 
 function setLogIn( res, formData, callback) {
-  //sess=req.session;
-
-  //res.writeHead(200, {'Content-Type': 'text/html'});
-
-  //var dataStr = data.toString();
-  //dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-
-
-  Parse.User.logIn(formData.username, formData.password, {
+  
+    Parse.User.logIn(formData.username, formData.password, {
     success: function(user) {
       // Do stuff after successful login.
-      var re = /%(.*?)%/g;
-      var i = 0;
-
-      /*
-      while( jsreap = re.exec(dataStr) ) {
-      var res2 = jsreap[1].split(":");
-
-      dataStr = dataStr.replace("%"+res2[0] +"%", user.get(res2[0]) != null ? user.get(res2[0]) : "" );
-
-    }
-    */
-    sess.currentUser = Parse.User.current();
-    console.log(sess.currentUser);
-    callback()
-
-    //res.write(dataStr);
-    //res.end()
-
+      
+        sess.currentUser = Parse.User.current();
+        console.log(sess.currentUser);
+        callback()
 
   },
   error: function(user, error) {
@@ -393,27 +351,17 @@ function getCurrentUser (data, res, req, callback) {
 
   var classname = "User"
   var currentUser = Parse.User.current();
-
+    
+    var foundRepeat  = false;
   //if (currentUser) {
   if (sess.currentUser) {
 
     var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
-    var foundRepeat  = "";
-
-    foundRepeat
-    while( jsreap = re1.exec(dataStr) ) {
-
-      foundRepeat = true;
-
-    }
-
-
-    if (foundRepeat) {
-
-      dataStr = dataStr.replace("%if currentuser%", "" );
-      dataStr = dataStr.replace("%endif%", "" );
-
-      var re = /%(.*?)%/gi;
+    console.log("··")
+    
+    while( currentUserReg = re1.exec(dataStr) ) {
+        
+        var re = /%(.*?)%/gi;
 
       while( jsreap = re.exec(dataStr) ) {
 
@@ -425,7 +373,7 @@ function getCurrentUser (data, res, req, callback) {
           if (res2[1] == "id") {
             dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
           } else {
-            dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%",sess.currentUser.name);
+            dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%",sess.currentUser[res2[1]]);
           }
 
 
@@ -434,9 +382,33 @@ function getCurrentUser (data, res, req, callback) {
 
 
       }
+        
+      foundRepeat = true;
+
+    }
 
 
+    if (foundRepeat) {
 
+      //dataStr = dataStr.replace("%if currentuser%", "" );
+      //dataStr = dataStr.replace("%endif%", "" );
+
+      
+        var re1 = /(%if currentuser%)/g;
+        while( jsreap = re1.exec(dataStr) ) {
+
+            dataStr = dataStr.replace(re1 , "" );
+
+        }
+        
+        
+        
+        var re3 = /(%else%)(.*?)(%endif%)/g;
+        while( jsreap = re3.exec(dataStr) ) {
+            dataStr = dataStr.replace(re3 , "" );
+        }
+        
+    
 
     }
 
@@ -445,14 +417,28 @@ function getCurrentUser (data, res, req, callback) {
     // show the signup or login page
 
     dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-
-    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
-    while( jsreap = re1.exec(dataStr) ) {
-
-      dataStr = dataStr.replace(re1 , "" );
-
-    }
-
+      
+      var notElse = true;
+      var re1 = /(%if currentuser%)(.*?)(%else%)/g;
+      
+      while( jsreap = re1.exec(dataStr) ) {
+          dataStr = dataStr.replace(re1 , "" );
+          notElse = false;
+      }
+      
+      if (notElse) {
+          console.log("notElse");
+          var re3 = /(%if currentuser%)(.*?)(%endif%)/g;
+        while( jsreap = re3.exec(dataStr) ) {
+            dataStr = dataStr.replace(re3 , "" );
+        }
+      } else {
+           var re3 = /(%endif%)/g;
+        while( jsreap = re3.exec(dataStr) ) {
+            dataStr = dataStr.replace(re3 , "" );
+        }
+      }
+      
   }
 
   data = dataStr;
@@ -548,6 +534,17 @@ app.get(/\/(login|signup)/, function(req,res){
     res.end()
 
   });
+});
+
+//
+app.get('/logout', function(req,res){
+    sess=req.session;
+    
+    Parse.User.logOut();
+    
+    sess.currentUser = null;
+    res.redirect('/');
+
 });
 
 app.get('/index', function(req,res){

@@ -30,6 +30,7 @@
                   </div>
               </div>
           </nav>
+          %else%
           %endif%
           
         <section id="logo">
@@ -99,8 +100,12 @@
 
     <footer>
       <ul>
+        %if currentuser%
+        <li><a href="logout">Logout</a></li>
+        %else%
         <li><a href="login">Ingresar</a></li>
         <li><a href="signup">Registrarme como organizador</a></li>
+        %endif%
         <li><a href="#">Contacto</a></li>
       </ul>
     </footer>
