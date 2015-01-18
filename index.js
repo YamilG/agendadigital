@@ -4,16 +4,31 @@ var fs = require('fs');
 var replace = require("replace");
 var async = require("async");
 var qs = require('querystring');
-var Parse = require('parse').Parse;
-var parseInit = require(__dirname+"/parsekeys.js");
-//var express = require('express');
-//var app = express();
+var express = require('express');
 var session		=	require('express-session');
+var bodyParser  	= 	require('body-parser');
+var Parse = require('parse').Parse;
+
+var parseInit = require(__dirname+"/parsekeys.js");
+
+
+//EXPRESS
+var app = express();
+
+app.set('views', __dirname + '/public');
+app.engine('html', require('ejs').renderFile);
+app.engine('css', require('ejs').renderFile);
+
+app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 var sess;
 
-console.log("Hello Cruel World");
-console.log("Node app is running at localhost: 5000");
+var path = require('path')
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 
 function getEvents(eventId, data, res, callback) {
@@ -279,13 +294,13 @@ function getFeaturedEvent(eventId, data, res, callback) {
   });
 }
 
-function setSignup(data, res, formData) {
+function setSignup(res, formData, callback) {
 
 
-  res.writeHead(200, {'Content-Type': 'text/html'});
+  //res.writeHead(200, {'Content-Type': 'text/html'});
 
-  var dataStr = data.toString();
-  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+  //var dataStr = data.toString();
+  //dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
 
 
@@ -301,37 +316,39 @@ function setSignup(data, res, formData) {
   user.signUp(null, {
     success: function(user) {
       // Hooray! Let them use the app now.
-
+      /*
       var re = /%(.*?)%/g;
       var i = 0;
 
       while( jsreap = re.exec(dataStr) ) {
-        var res2 = jsreap[1].split(":");
+      var res2 = jsreap[1].split(":");
 
-        dataStr = dataStr.replace("%"+res2[0] +"%", formData[res2[0]] != null ? formData[res2[0]] : "" );
+      dataStr = dataStr.replace("%"+res2[0] +"%", formData[res2[0]] != null ? formData[res2[0]] : "" );
 
-      }
-      res.write(dataStr);
-      res.end()
-
-
-    },
-    error: function(user, error) {
-      // Show the error message somewhere and let the user try again.
-      console.log("Error: " + error.code + " " + error.message);
-      res.write("Error: " + error.code + " " + error.message);
-      res.end()
     }
-  });
+    */
+    //res.write(dataStr);
+    //res.end()
+
+    callback();
+  },
+  error: function(user, error) {
+    // Show the error message somewhere and let the user try again.
+    console.log("Error: " + error.code + " " + error.message);
+    res.write("Error: " + error.code + " " + error.message);
+    res.end()
+  }
+});
 
 }
 
-function setLogIn(data, res, formData) {
+function setLogIn( res, formData, callback) {
+  //sess=req.session;
 
-  res.writeHead(200, {'Content-Type': 'text/html'});
+  //res.writeHead(200, {'Content-Type': 'text/html'});
 
-  var dataStr = data.toString();
-  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+  //var dataStr = data.toString();
+  //dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
 
   Parse.User.logIn(formData.username, formData.password, {
@@ -340,269 +357,281 @@ function setLogIn(data, res, formData) {
       var re = /%(.*?)%/g;
       var i = 0;
 
+      /*
       while( jsreap = re.exec(dataStr) ) {
-        var res2 = jsreap[1].split(":");
+      var res2 = jsreap[1].split(":");
 
-        dataStr = dataStr.replace("%"+res2[0] +"%", user.get(res2[0]) != null ? user.get(res2[0]) : "" );
+      dataStr = dataStr.replace("%"+res2[0] +"%", user.get(res2[0]) != null ? user.get(res2[0]) : "" );
 
-      }
-      res.write(dataStr);
-      res.end()
-    },
-    error: function(user, error) {
-      // The login failed. Check error to see why.
-      console.log("Error: " + error.code + " " + error.message);
-      res.write("Error: " + error.code + " " + error.message);
-      res.end()
     }
-  });
+    */
+    sess.currentUser = Parse.User.current();
+    console.log(sess.currentUser);
+    callback()
+
+    //res.write(dataStr);
+    //res.end()
+
+
+  },
+  error: function(user, error) {
+    // The login failed. Check error to see why.
+    console.log("Error: " + error.code + " " + error.message);
+    res.write("Error: " + error.code + " " + error.message);
+    res.end()
+  }
+});
 
 
 }
 
 function getCurrentUser (data, res, req, callback) {
-    sess=req.session;
-    
-    var dataStr = data.toString();
-    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-    
-    var classname = "User"
-    var currentUser = Parse.User.current();
-    if (currentUser) {
-       
-    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
-      var foundRepeat  = "";
-        
-        foundRepeat
-        while( jsreap = re1.exec(dataStr) ) {
+  sess=req.session;
 
-        foundRepeat = true;
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+  var classname = "User"
+  var currentUser = Parse.User.current();
+
+  //if (currentUser) {
+  if (sess.currentUser) {
+
+    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
+    var foundRepeat  = "";
+
+    foundRepeat
+    while( jsreap = re1.exec(dataStr) ) {
+
+      foundRepeat = true;
+
+    }
+
+
+    if (foundRepeat) {
+
+      dataStr = dataStr.replace("%if currentuser%", "" );
+      dataStr = dataStr.replace("%endif%", "" );
+
+      var re = /%(.*?)%/gi;
+
+      while( jsreap = re.exec(dataStr) ) {
+
+        var res2 = jsreap[1].split(":");
+
+        if (res2[0] == classname ) {
+
+
+          if (res2[1] == "id") {
+            dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
+          } else {
+            dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%",sess.currentUser.name);
+          }
+
+
+
+        }
+
 
       }
 
 
-      if (foundRepeat) {
-
-          dataStr = dataStr.replace("%if currentuser%", "" );
-          dataStr = dataStr.replace("%endif%", "" );
-          
-          var re = /%(.*?)%/gi;
-
-          while( jsreap = re.exec(dataStr) ) {
-
-            var res2 = jsreap[1].split(":");
-
-            if (res2[0] == classname ) {
 
 
-                  if (res2[1] == "id") {
-                    dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
-                  } else {
-                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.get(res2[1]));
-                  }
-
-              
-
-            }
-          
-
-        }
-          
-        
-        
-        
     }
-    
-    
-    } else {
-        // show the signup or login page
-        
-        dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
-        var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
-        while( jsreap = re1.exec(dataStr) ) {
 
-          dataStr = dataStr.replace(re1 , "" );
+  } else {
+    // show the signup or login page
 
-        }
-        
+    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
+    while( jsreap = re1.exec(dataStr) ) {
+
+      dataStr = dataStr.replace(re1 , "" );
+
     }
-    
-    data = dataStr;
-    
-    callback(data);
+
+  }
+
+  data = dataStr;
+
+  callback(data);
 }
 
-var server = http.createServer(function (req, res) {
+
+
+//Get
+
+//Root
+app.get('/', function(req,res){
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
+
+
+  //res.render('index.html');
+  fs.readFile("index.html", 'utf8', function (err,data) {
+
+    async.series(
+      [function(callback){
+        res.writeHead(200, {"Content-Type": "text/html"})
+
+        callback(null, 'one');
+      },
+      function(callback){
+
+        getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+      },
+      function(callback){
+        getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
+      },
+      function(callback){
+        getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'four'); } );
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        res.write(data);
+        res.end()
+        callback(null, 'done');
+      } ]
+    );
+
+  });
+
+
+});
+
+//Detail Event
+app.get('/:type(event|page)/:id', function(req,res, next){
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
+
+  fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
+
+    async.series([
+      function(callback){
+        res.writeHead(200, {"Content-Type": "text/html"})
+
+        callback(null, 'one');
+      },
+      function(callback){
+        getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+      },
+      function(callback){
+        getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        res.write(data);
+        res.end()
+        callback(null, 'done');
+      }
+      ]
+    );
+
+  });
+
+});
+
+//All other pages
+app.get(/\/(login|signup)/, function(req,res){
+
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
+
+  console.log("OKA");
+  fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
+
+    res.writeHead(200, {"Content-Type": "text/html"})
+    res.write(data);
+    res.end()
+
+  });
+});
+
+app.get('/index', function(req,res){
+  sess=req.session;
+  if(sess.email)
+  {
+    res.write('<h1>Hello '+sess.email+'</h1><br>');
+    res.end('<a href='+'/logout'+'>Logout</a>');
+  }
+  else
+  {
+    res.write('<h1>Please login first.</h1>');
+    res.end('<a href='+'/'+'>Login</a>');
+  }
+
+});
+
+
+//Post
+
+//Login
+app.post('/login', function(req,res) {
+  sess=req.session;
+  sess.userReq = req.body;
+  //console.log(requestBody);
+  async.series([
+    function(callback){
+      setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
+
+
+    },
+    function(callback){
+
+      res.redirect('/');
+      callback(null, 'done');
+    }
+    ]
+  );
+
+});
+
+//Signup
+app.post('/signup', function(req,res) {
+  sess=req.session;
+  sess.userReq = req.body;
+  //console.log(requestBody);
+  async.series([
+    function(callback){
+
+      setSignup(res, sess.userReq, function () { callback(null, 'one') } )
+
+      //setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
+
+
+    },
+    function(callback){
+      setLogIn(res, sess.userReq,  function () { callback(null, 'two') } );
+
+
+    },
+    function(callback){
+
+      res.redirect('/');
+      callback(null, 'done');
+    }
+    ]
+  );
+
+
+
+
+  //});
+
+
+  //sess.email=req.body.username;
+  //res.end('done');
+});
+
+
+
+app.listen( (process.env.PORT || 5000) ,function(){
+  console.log("Hello Cruel World");
+  console.log("Node app is running at localhost: 5000");
 
   Parse.initialize(parseInit.appKeys.appid, parseInit.appKeys.jsid);
 
-  parseado = url.parse(req.url, true)
-  dir = parseado.pathname.split('/')
-
-  var direct = parseado.pathname.replace(/\//, '');
-
-  if(direct.search(".png") > -1 ) {
-    var img = fs.readFileSync(direct);
-    res.writeHead(200, {"Content-Type": "image/png" });
-    res.write(img);
-    res.end()
-  }
-  else if(direct.search(".jpg") > -1 ) {
-    var img = fs.readFileSync(direct);
-    res.writeHead(200, {"Content-Type": "image/jpg" });
-    res.write(img);
-    res.end()
-  }
-  else  if (direct.search(".css") > -1 ) {
-
-    fs.readFile(direct, 'utf8', function (err,data) {
-      if (err) {
-        return console.log(err);
-      }
-      res.writeHead(200, {"Content-Type": "text/css"})
-      res.write(data);
-      res.end()
-    });
-
-  }
-  else  if (direct.search(".js") > -1 ) {
-
-    fs.readFile(direct, 'utf8', function (err,data) {
-      if (err) {
-        return console.log(err);
-      }
-      res.writeHead(200, {"Content-Type": "text/javascript"})
-      res.write(data);
-      res.end()
-    });
-
-
-  }
-  else {
-
-    dir[1] = (dir[1] == "") ? "index" : dir[1]
-
-    fs.exists(dir[1] + ".html", function (exists) {
-
-      if (!exists) {
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        fs.createReadStream('404.html').pipe(res);
-        return false;
-      }
-    });
-
-
-      fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
-
-        if (err) {
-          return console.log(err);
-        }
-
-        if(req.method === "POST") {
-          console.log("request");
-            sess=req.session;
-          var requestBody = '';
-          req.on('data', function(data) {
-            requestBody += data;
-            if(requestBody.length > 1e7) {
-              res.writeHead(413, 'Request Entity Too Large', {'Content-Type': 'text/html'});
-              res.end('<!doctype html><html><head><title>413</title></head><body>413: Request Entity Too Large</body></html>');
-            }
-          });
-          req.on('end', function() {
-            var formData = qs.parse(requestBody);
-
-            if (dir[1] == "signupconf") {
-              setSignup(data, res, formData)
-            } else if (dir[1] == "loginconf") {
-              setLogIn(data, res, formData)
-            }
-
-          });
-        }
-        else {
-
-            if (dir[1] == "index") {
-
-            async.series(
-              [function(callback){
-                res.writeHead(200, {"Content-Type": "text/html"})
-
-                callback(null, 'one');
-              },
-              function(callback){
-                getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-              },
-              function(callback){
-                getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
-              },
-               function(callback){
-                getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'four'); } );
-              },
-              function(callback){
-                // arg1 now equals 'three'
-                res.write(data);
-                res.end()
-                callback(null, 'done');
-              } ]
-            );
-
-
-          }
-          else if (dir[1] == "event") {
-
-            async.series([
-              function(callback){
-                res.writeHead(200, {"Content-Type": "text/html"})
-
-                callback(null, 'one');
-              },
-              function(callback){
-                getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-              },
-              function(callback){
-                getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
-              },
-              function(callback){
-                // arg1 now equals 'three'
-                res.write(data);
-                res.end()
-                callback(null, 'done');
-              }
-              ]
-            );
-
-
-          }
-          else if (dir[1] == "signupconf" || dir[1] == "loginconf") {
-
-             res.writeHead(302, {
-                  'Location': 'login'
-                  //add other headers here...
-              });
-              res.end();
-              
-          }
-          else {
-            
-            res.writeHead(200, {"Content-Type": "text/html"})
-            res.write(data);
-            res.end()
-          }
-
-          /*
-          res.writeHead(200, {"Content-Type": "text/html"})
-          res.write(data);
-          res.end()
-          */
-        }
-
-      });
-
-
-  }
-
-
-})
-server.listen(process.env.PORT || 5000)
+});
