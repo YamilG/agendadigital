@@ -23,6 +23,33 @@ h2 {
   padding: 0;
 }
 
+.login form {
+  padding-right: 5px;
+}
+
+.login p a {
+  font-weight: bold;
+}
+
+.login input {
+  width: 100%;
+  padding: 10px 5px;
+  border-radius: 3px;
+  border: 1px solid #c9c9c9;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.login button[type='submit'] {
+  width: 100%;
+  font-size: 18px;
+  padding: 10px 5px;
+  margin-top: 15px;
+  font-family: "ff-tisa-sans-web-pro", sans-serif;
+  text-transform: uppercase;
+}
+
 main ul {
   list-style: none;
   margin: 0;
@@ -158,7 +185,7 @@ nav img {
 nav {
   font-weight: bold;
   text-transform: uppercase;
-  background: gray;
+  background: #b9b9b9;
   text-align: right;
   padding-right: 15px;
 }
