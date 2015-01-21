@@ -11,28 +11,25 @@
   </head>
   <body>
 
+    %if currentuser%
+      <nav>
+          <a href="#">
+              <img src="mr.png" />
+              <span>%User:name%</span>
+          </a>
+          <a href="logout">Logout</a>
+      </nav>
+    %else%
+    %endif%
+
     <div class="container">
-      <header>
+     <header>
         <section id="search-box">
           <form method="get" action="#">
             <input type="text" id="search" name="search" placeholder="Buscar..." />
           </form>
         </section>
-          
-          %if currentuser%
-          <nav class="navbar navbar-default">
-              <div class="container-fluid">
-                  <div class="navbar-header">
-                      <a class="navbar-brand" href="#">
-                          <img alt="Brand" src="mr.png" width="30px">
-                          <span>%User:name%</span>
-                      </a>
-                  </div>
-              </div>
-          </nav>
-          %else%
-          %endif%
-          
+         
         <section id="logo">
           <h1>Agenda Digital</h1>
         </section>
@@ -101,7 +98,6 @@
     <footer>
       <ul>
         %if currentuser%
-        <li><a href="logout">Logout</a></li>
         %else%
         <li><a href="login">Ingresar</a></li>
         <li><a href="signup">Registrarme como organizador</a></li>

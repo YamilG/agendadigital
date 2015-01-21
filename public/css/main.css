@@ -146,6 +146,29 @@ footer ul li a {
   box-sizing: border-box;
 }
 
+/* user info */ 
+nav img {
+  width: 30px;
+  border-radius: 50px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background: white;
+}
+
+nav {
+  font-weight: bold;
+  text-transform: uppercase;
+  background: gray;
+  text-align: right;
+  padding-right: 15px;
+}
+
+nav a {
+  color: white;
+  display: inline-block;
+  padding: 10px;
+}
+
 @media (min-width: 375px) {
   .info {
     width: 70%;
@@ -167,6 +190,10 @@ footer ul li a {
 
   body {
     border-top: 5px solid gray;
+  }
+
+  nav {
+    font-size: 14px;
   }
 
   .events {
