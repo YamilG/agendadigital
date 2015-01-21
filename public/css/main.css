@@ -160,6 +160,7 @@ footer ul li a {
   .featured {
     height: 100%;
   }
+
 }
 
 @media (min-width: 768px) {
@@ -231,15 +232,20 @@ footer ul li a {
     float: none;
   }
 
-  footer ul {
-    width: 430px;
-    margin: 0 auto;
-    overflow: auto;
+  footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  main {
+    margin-bottom: 50px;
   }
 
   footer ul li {
-    float: left;
-    margin: 0 20px;
+    display: inline-block;
+    padding: 0 20px;
   }
 
   footer ul li a {
