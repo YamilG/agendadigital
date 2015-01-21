@@ -227,6 +227,11 @@ nav a {
     margin-bottom: 20px;
   }
 
+  .login {
+    width: 60%;
+    margin: 0 auto;
+  }
+
   .container {
     max-width: 960px;
     margin: 0 auto;
@@ -322,6 +327,10 @@ nav a {
 @media (min-width: 992px) {
   .container {
     max-width: 100%;
+  }
+
+  .login {
+    width: 45%;
   }
 
   main > section {
