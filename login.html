@@ -29,7 +29,7 @@
 
       <main class="login">
         %if currentuser%
-        <p>Ya has iniciado sesión, seguramente llegaste a esta página por error.</p>
+        <p>Ya iniciaste sesión, seguramente llegaste a esta página por error.</p>
         <p><a href="/">Regresá a la página principal</a></p>
         %else%
           <h3>Ingresar</h3>
@@ -46,6 +46,8 @@
               
               <button type="submit">Ingresar</button>
           </form>
+
+          <p>Si todavía no te has registrado, podés <a href="signup">crear una nueva cuenta</a></p>
 
         %endif%
       </main>
