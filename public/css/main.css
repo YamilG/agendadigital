@@ -259,6 +259,10 @@ footer ul li a {
   main a .event {
     border-bottom: none;
   }
+
+  .event {
+    overflow: hidden;
+  }
 }
 
 @media (min-width: 992px) {
