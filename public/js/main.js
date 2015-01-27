@@ -13,10 +13,10 @@ $(function() {
 
 	function checkMobile() {
 		if( screen.width <= 768 ) {
-			$('#featured-img').attr('src','%Featured:bannerMini:image%');
+			$('#featured-img').attr('src',img1);
 			// alert('is mobile!');
 		} else { 
-			$('#featured-img').attr('src','%Featured:banner:image%');
+			$('#featured-img').attr('src', img2);
 			// alert('is not mobile!');
 		}
 	};
