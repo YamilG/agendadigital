@@ -63,6 +63,12 @@
 
       success: function(events) {
 
+        if (events.length == 0) {
+          //callback(dataStr);
+          res.redirect("/")
+          return;
+        }
+
 
         var prot = "";
         var foundRepeat = false;
@@ -145,8 +151,8 @@
                     month[9] = "October";
                     month[10] = "November";
                     month[11] = "December";
-                    
-                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDay() + " de " +  month[events[i].get(res2[1]).getMonth()] + " " + events[i].get(res2[1]).getFullYear()  ): "" );
+
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] + " " + events[i].get(res2[1]).getFullYear()  ): "" );
                     }  else {
                       tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]));
                     }
@@ -177,6 +183,7 @@
         else {
 
           //One Value
+
 
           var re = /%(.*?)%/g;
           var i = 0;
@@ -221,24 +228,24 @@
 
               if (res2[1] == "id") {
                 dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
-              } 
+              }
                 else if (res2[1] == "date") {
-                    var month = new Array();
-month[0] = "January";
-month[1] = "February";
-month[2] = "March";
-month[3] = "April";
-month[4] = "May";
-month[5] = "June";
-month[6] = "July";
-month[7] = "August";
-month[8] = "September";
-month[9] = "October";
-month[10] = "November";
-month[11] = "December";
-                    
-                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDay() + " de " +  month[events[i].get(res2[1]).getMonth()] ): "" );
-              } 
+                  var month = new Array();
+                  month[0] = "January";
+                  month[1] = "February";
+                  month[2] = "March";
+                  month[3] = "April";
+                  month[4] = "May";
+                  month[5] = "June";
+                  month[6] = "July";
+                  month[7] = "August";
+                  month[8] = "September";
+                  month[9] = "October";
+                  month[10] = "November";
+                  month[11] = "December";
+
+                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] ): "" );
+              }
                 else {
                 if (events[i].get(res2[1]) != null) {
                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? events[i].get(res2[1]) : "" );
@@ -283,8 +290,8 @@ month[11] = "December";
 
     var eventT = Parse.Object.extend(classname);
     var query = new Parse.Query(eventT);
-    query.include("event");
-      query.include("event.organizer");
+    //query.include();
+    query.include(["event", "event.organizer"]);
     query.limit(1);
     if (eventId) {
       query.equalTo("objectId", eventId);
@@ -324,8 +331,8 @@ month[11] = "December";
             }
               else if (res2[2] == "User") {
 
-                  if (events[i].get("organizer") != null) {
-                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
+                  if (events[i].attributes.event.attributes.organizer.attributes.name != null) {
+                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].attributes.event.attributes.organizer.attributes.name);
                   } else {
                     dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
                   }
@@ -565,18 +572,14 @@ month[11] = "December";
 
               async.series([
                 function(callback){
-                  res.writeHead(200, {"Content-Type": "text/html"})
-
-                  callback(null, 'one');
+                  getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
                 },
                 function(callback){
-                  getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-                },
-                function(callback){
-                  getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
+                  getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
                 },
                 function(callback){
                   // arg1 now equals 'three'
+                  res.writeHead(200, {"Content-Type": "text/html"})
                   res.write(data);
                   res.end()
                   callback(null, 'done');
