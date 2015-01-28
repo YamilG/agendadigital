@@ -23,6 +23,10 @@ h2 {
   padding: 0;
 }
 
+a:focus {
+  outline: 0;
+}
+
 .login form {
   padding-right: 5px;
 }
@@ -173,7 +177,7 @@ footer ul li a {
   box-sizing: border-box;
 }
 
-/* user info */ 
+/* user info */
 nav img {
   width: 30px;
   border-radius: 50px;
@@ -376,5 +380,15 @@ nav a {
     float: none;
     margin: 0 auto;
     width: 30%;
+  }
+}
+
+@media (min-width: 992px) {
+  main ul li {
+    width: 33.333333%;
+  }
+
+  main ul li:nth-child(odd){
+    margin-right: 0;
   }
 }
