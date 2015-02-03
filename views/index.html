@@ -1,0 +1,60 @@
+<aside>
+    <h3>Evento Destacado</h3>
+
+    <a href="event/%Featured:id%">
+        <div class="event featured">
+            <div class="event-avatar">
+                <img src="%Featured:banner:image%" id="featured-img" />
+            </div>
+
+            <div class="info">
+                <h2>%Featured:name%</h2>
+                <p class="organizer">%Featured:name:User%</p>
+
+                <div class="event-description">
+                    <p>%Featured:description%</p>
+                </div>
+
+                <p class="date">%Featured:date%</p>
+            </div>
+
+        </div>
+    </a>
+</aside>
+
+<section>
+
+    <h3>Próximos Eventos</h3>
+
+    <div class="events">
+
+        <ul>
+            %repeat%
+
+            <li><a href="event/%Event:id%">
+                <div class="event">
+                    <div class="event-avatar">
+                        <img src="%Event:bannerMini:image%" />
+                    </div>
+
+                    <div class="info">
+                        <h2>%Event:name%</h2>
+                        <p class="organizer">%Event:name:User%</p>
+
+                        <p class="date">%Event:date%</p>
+                    </div>
+                </div>
+                </a></li>
+
+            %endrepeat%
+        </ul>
+
+    </div>
+
+    <a href="#" class="more"><button type="button" class="btn">Ver Todos</button></a>
+
+</section>
+<script>
+    var img1 = "%Featured:banner:image%";
+    var img2 = "%Featured:bannerMini:image%";
+</script>

@@ -1,145 +1,144 @@
-  var url = require('url');
-  var http = require('http');
-  var fs = require('fs');
-  var replace = require("replace");
-  var async = require("async");
-  var qs = require('querystring');
-  var express = require('express');
-  var session		=	require('express-session');
-  var bodyParser  	= 	require('body-parser');
-  var multer  = require('multer')
+var url = require('url');
+var http = require('http');
+var fs = require('fs');
+var replace = require("replace");
+var async = require("async");
+var qs = require('querystring');
+var express = require('express');
+var session		=	require('express-session');
+var bodyParser  	= 	require('body-parser');
+var multer  = require('multer')
 
-  var Parse = require('parse').Parse;
-
-
-  var parseInit = require(__dirname+"/parsekeys.js");
+var Parse = require('parse').Parse;
 
 
-  //EXPRESS
-  var app = express();
-  app.use(multer({ dest: './uploads/'}))
-
-  app.set('views', __dirname + '/public');
-  app.use(express.static(__dirname + '/public'));
-
-  app.engine('html', require('ejs').renderFile);
-  app.engine('css', require('ejs').renderFile);
-
-  app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({extended: true}));
-
-  var sess;
-
-  var path = require('path')
-  app.use(express.static(path.join(__dirname, 'public')));
+var parseInit = require(__dirname+"/parsekeys.js");
 
 
+//EXPRESS
+var app = express();
+app.use(multer({ dest: './uploads/'}))
+
+app.set('views', __dirname + '/views');
+app.use(express.static(__dirname + '/public'));
+
+app.engine('html', require('ejs').renderFile);
+app.engine('css', require('ejs').renderFile);
+
+app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+var sess;
+
+var path = require('path')
+app.use(express.static(path.join(__dirname, 'public')));
 
 
-  function getEvents(eventId, data, res, callback) {
+
+function getEvents(eventId, data, res, callback) {
 
 
-    var dataStr = data.toString();
-    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
-    var re1 = /(%search:)(.*?)%/g;
-    var temp  = ""
+  var re1 = /(%search:)(.*?)%/g;
+  var temp  = ""
 
-    //Get Events
+  //Get Events
 
 
-    var classname = "Event";
+  var classname = "Event";
 
-    var eventT = Parse.Object.extend(classname);
-    var query = new Parse.Query(eventT);
-      query.include("organizer")
-      query.ascending("date");
-      query.greaterThan("date", new Date());
+  var eventT = Parse.Object.extend(classname);
+  var query = new Parse.Query(eventT);
+  query.include("organizer")
+  query.ascending("date");
+  query.greaterThan("date", new Date());
 
-    if (eventId) {
-      query.equalTo("objectId", eventId);
-    }
+  if (eventId) {
+    query.equalTo("objectId", eventId);
+  }
 
-    query.find({
+  query.find({
 
-      success: function(events) {
+    success: function(events) {
 
-        if (events.length == 0) {
-          //callback(dataStr);
-          res.redirect("/")
-          return;
+      if (events.length == 0) {
+        //callback(dataStr);
+        res.redirect("/")
+        return;
+      }
+
+
+      var prot = "";
+      var foundRepeat = false;
+
+      var re1 = /(%repeat%)(.*?)(%endrepeat%)/g;
+      var temp  = "";
+
+      while( jsreap = re1.exec(dataStr) ) {
+
+        temp = jsreap[2];
+        foundRepeat = true;
+
+      }
+
+      //Repeating cycle
+
+      if (foundRepeat) {
+
+        var tmpsPans = [];
+        for (var i = 0; i < events.length; ++i) {
+          tmpsPans[i] = temp
         }
 
+        for (var i = 0; i < events.length; ++i) {
 
-        var prot = "";
-        var foundRepeat = false;
+          var re = /%(.*?)%/gi;
 
-        var re1 = /(%repeat%)(.*?)(%endrepeat%)/g;
-        var temp  = "";
+          while( jsreap = re.exec(dataStr) ) {
 
-        while( jsreap = re1.exec(dataStr) ) {
+            var res2 = jsreap[1].split(":");
 
-          temp = jsreap[2];
-          foundRepeat = true;
+            if (res2[0] == classname ) {
 
-        }
+              if (res2[2] == "image") {
 
-        //Repeating cycle
-
-        if (foundRepeat) {
-
-          var tmpsPans = [];
-          for (var i = 0; i < events.length; ++i) {
-            tmpsPans[i] = temp
-          }
-
-          for (var i = 0; i < events.length; ++i) {
-
-            var re = /%(.*?)%/gi;
-
-            while( jsreap = re.exec(dataStr) ) {
-
-              var res2 = jsreap[1].split(":");
-
-              if (res2[0] == classname ) {
-
-                if (res2[2] == "image") {
-
-                  if (events[i].get(res2[1]) != null) {
-                    var profilePhoto = events[i].get(res2[1]);
-                    var photourl = profilePhoto.url();
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
-                  } else {
-                    var photourl = "https://browshot.com/static/images/not-found.png";
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
-                  }
-
+                if (events[i].get(res2[1]) != null) {
+                  var profilePhoto = events[i].get(res2[1]);
+                  var photourl = profilePhoto.url();
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
+                } else {
+                  var photourl = "https://browshot.com/static/images/not-found.png";
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
                 }
-                else if (res2[2] == "geoPoint") {
 
-                  if (events[i].get(res2[0]) != null) {
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", events[i].get(res2[0])[res2[2]] );
-                  } else {
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", "0");
-                  }
+              }
+              else if (res2[2] == "geoPoint") {
 
+                if (events[i].get(res2[0]) != null) {
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", events[i].get(res2[0])[res2[2]] );
+                } else {
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", "0");
                 }
-                  else if (res2[2] == "User") {
 
-                  if (events[i].get("organizer") != null) {
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
-                  } else {
-                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
-                  }
+              }
+              else if (res2[2] == "User") {
 
+                if (events[i].get("organizer") != null) {
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
+                } else {
+                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
                 }
-                else {
 
-                  if (res2[0] != "repeat" && res2[0] != "endrepeat") {
-                    if (res2[1] == "id") {
-                      tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
-                    } else if (res2[1] == "date") {
+              }
+              else {
+
+                if (res2[0] != "repeat" && res2[0] != "endrepeat") {
+                  if (res2[1] == "id") {
+                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
+                  } else if (res2[1] == "date") {
                     var month = new Array();
                     month[0] = "Enero";
                     month[1] = "Febrero";
@@ -154,46 +153,46 @@
                     month[10] = "Noviembre";
                     month[11] = "Diciembre";
 
-                  tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] + " " + events[i].get(res2[1]).getFullYear()  ): "" );
-                    }  else {
-                      tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]));
-                    }
+                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] + " " + events[i].get(res2[1]).getFullYear()  ): "" );
+                  }  else {
+                    tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]));
                   }
-
                 }
 
               }
+
             }
-
-          }
-
-          dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-
-          var re1 = /(%repeat%)(.*?)(%endrepeat%)/g;
-          while( jsreap = re1.exec(dataStr) ) {
-
-            for (var i = 0; i < events.length; ++i) {
-              prot =   prot + tmpsPans[i];
-            }
-
-            dataStr = dataStr.replace(re1 , prot );
-
           }
 
         }
 
-        else {
+        dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
-          //One Value
+        var re1 = /(%repeat%)(.*?)(%endrepeat%)/g;
+        while( jsreap = re1.exec(dataStr) ) {
+
+          for (var i = 0; i < events.length; ++i) {
+            prot =   prot + tmpsPans[i];
+          }
+
+          dataStr = dataStr.replace(re1 , prot );
+
+        }
+
+      }
+
+      else {
+
+        //One Value
 
 
-          var re = /%(.*?)%/g;
-          var i = 0;
+        var re = /%(.*?)%/g;
+        var i = 0;
 
-          while( jsreap = re.exec(dataStr) ) {
-            var res2 = jsreap[1].split(":");
+        while( jsreap = re.exec(dataStr) ) {
+          var res2 = jsreap[1].split(":");
 
-            if (res2[0] == "Event") {
+          if (res2[0] == "Event") {
             if (res2[2] == "image" ) {
 
               if (events[i].get(res2[1]) != null) {
@@ -217,11 +216,11 @@
             }
             else if (res2[2] == "User") {
 
-                  if (events[i].get("organizer") != null) {
-                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
-                  } else {
-                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
-                  }
+              if (events[i].get("organizer") != null) {
+                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
+              } else {
+                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
+              }
             }
             else {
 
@@ -231,24 +230,24 @@
               if (res2[1] == "id") {
                 dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
               }
-                else if (res2[1] == "date") {
-                  var month = new Array();
-                  month[0] = "Enero";
-                    month[1] = "Febrero";
-                    month[2] = "Marzo";
-                    month[3] = "Abril";
-                    month[4] = "Mayo";
-                    month[5] = "Junio";
-                    month[6] = "Julio";
-                    month[7] = "Agosto";
-                    month[8] = "Septiembre";
-                    month[9] = "Octubre";
-                    month[10] = "Noviembre";
-                    month[11] = "Diciembre";
+              else if (res2[1] == "date") {
+                var month = new Array();
+                month[0] = "Enero";
+                month[1] = "Febrero";
+                month[2] = "Marzo";
+                month[3] = "Abril";
+                month[4] = "Mayo";
+                month[5] = "Junio";
+                month[6] = "Julio";
+                month[7] = "Agosto";
+                month[8] = "Septiembre";
+                month[9] = "Octubre";
+                month[10] = "Noviembre";
+                month[11] = "Diciembre";
 
-                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] ): "" );
+                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] ): "" );
               }
-                else {
+              else {
                 if (events[i].get(res2[1]) != null) {
                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? events[i].get(res2[1]) : "" );
                 }
@@ -258,135 +257,135 @@
               //}
 
             }
-            }
           }
-
         }
 
-
-        callback(dataStr);
-
-
-      },
-      error: function(error) {
-        console.log("Error")
-        res.writeHead(202, {"Content-Type": "text/html"})
-        //response.write("Error: " + error.code + " " + error.message);
-
-        callback(data);
-
       }
-    });
+
+
+      callback(dataStr);
+
+
+    },
+    error: function(error) {
+      console.log("Error")
+      res.writeHead(202, {"Content-Type": "text/html"})
+      //response.write("Error: " + error.code + " " + error.message);
+
+      callback(data);
+
+    }
+  });
 
 
 
+}
+
+function getFeaturedEvent(eventId, data, res, callback) {
+
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+
+  var classname = "Featured";
+
+  var eventT = Parse.Object.extend(classname);
+  var query = new Parse.Query(eventT);
+  //query.include();
+  query.include(["event", "event.organizer"]);
+  query.limit(1);
+  if (eventId) {
+    query.equalTo("objectId", eventId);
   }
 
-  function getFeaturedEvent(eventId, data, res, callback) {
+  query.find({
+    success: function(events) {
 
-    var dataStr = data.toString();
-    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+      //One Value
 
+      var re = /%(.*?)%/g;
+      var i = 0;
 
-    var classname = "Featured";
+      while( jsreap = re.exec(dataStr) ) {
+        var res2 = jsreap[1].split(":");
 
-    var eventT = Parse.Object.extend(classname);
-    var query = new Parse.Query(eventT);
-    //query.include();
-    query.include(["event", "event.organizer"]);
-    query.limit(1);
-    if (eventId) {
-      query.equalTo("objectId", eventId);
-    }
+        if (res2[0] == classname) {
 
-    query.find({
-      success: function(events) {
+          if (res2[2] == "image" ) {
 
-        //One Value
-
-        var re = /%(.*?)%/g;
-        var i = 0;
-
-        while( jsreap = re.exec(dataStr) ) {
-          var res2 = jsreap[1].split(":");
-
-          if (res2[0] == classname) {
-
-            if (res2[2] == "image" ) {
-
-              if (events[i].get("event").get(res2[1]) != null) {
-                var profilePhoto = events[i].get("event").get(res2[1]);
-                var photourl = profilePhoto.url();
-                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
-              } else {
-                var photourl = "https://browshot.com/static/images/not-found.png";
-                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
-              }
-
+            if (events[i].get("event").get(res2[1]) != null) {
+              var profilePhoto = events[i].get("event").get(res2[1]);
+              var photourl = profilePhoto.url();
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
+            } else {
+              var photourl = "https://browshot.com/static/images/not-found.png";
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", photourl );
             }
-            else if (res2[2] == "geoPoint") {
-
-              if (events[i].get("event").get(res2[0]) != null) {
-                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", events[i].get("event").get(res2[1]).res2[2] );
-              }
-
-            }
-              else if (res2[2] == "User") {
-
-                  if (events[i].attributes.event.attributes.organizer.attributes.name != null) {
-                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].attributes.event.attributes.organizer.attributes.name);
-                  } else {
-                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
-                  }
 
           }
-            else {
-              if (res2[1] != "repeat" && res2[1] != "endrepeat") {
+          else if (res2[2] == "geoPoint") {
+
+            if (events[i].get("event").get(res2[0]) != null) {
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2] + ":" + res2[3] + "%", events[i].get("event").get(res2[1]).res2[2] );
+            }
+
+          }
+          else if (res2[2] == "User") {
+
+            if (events[i].attributes.event.attributes.organizer.attributes.name != null) {
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].attributes.event.attributes.organizer.attributes.name);
+            } else {
+              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
+            }
+
+          }
+          else {
+            if (res2[1] != "repeat" && res2[1] != "endrepeat") {
 
 
 
-                if (res2[1] == "id") {
-                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get("event").id );
-                } else {
-                  if (events[i].get("event").get(res2[1]) != null) {
-                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get("event").get(res2[1]) != null ? events[i].get("event").get(res2[1]) : "" );
-                  }
+              if (res2[1] == "id") {
+                dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get("event").id );
+              } else {
+                if (events[i].get("event").get(res2[1]) != null) {
+                  dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get("event").get(res2[1]) != null ? events[i].get("event").get(res2[1]) : "" );
                 }
               }
-
             }
 
           }
+
         }
-
-        callback(dataStr);
-
-      },
-      error: function(error) {
-        console.log("Error")
-        res.writeHead(202, {"Content-Type": "text/html"})
-        //response.write("Error: " + error.code + " " + error.message);
-
-        callback(data);
       }
-    });
-  }
 
-  function setSignup(res, formData, callback) {
+      callback(dataStr);
 
-    var user = new Parse.User();
-    user.set("username", formData.username);
-    user.set("password", formData.password);
-    user.set("email", formData.email);
+    },
+    error: function(error) {
+      console.log("Error")
+      res.writeHead(202, {"Content-Type": "text/html"})
+      //response.write("Error: " + error.code + " " + error.message);
 
-    // other fields can be set just like with Parse.Object
-    user.set("name", formData.name);
+      callback(data);
+    }
+  });
+}
+
+function setSignup(res, formData, callback) {
+
+  var user = new Parse.User();
+  user.set("username", formData.username);
+  user.set("password", formData.password);
+  user.set("email", formData.email);
+
+  // other fields can be set just like with Parse.Object
+  user.set("name", formData.name);
 
 
-    user.signUp(null, {
-      success: function(user) {
-        // Hooray! Let them use the app now.
-          callback();
+  user.signUp(null, {
+    success: function(user) {
+      // Hooray! Let them use the app now.
+      callback();
     },
     error: function(user, error) {
       // Show the error message somewhere and let the user try again.
@@ -396,16 +395,16 @@
     }
   });
 
-  }
+}
 
-  function setLogIn( res, formData, callback) {
+function setLogIn( res, formData, callback) {
 
-      Parse.User.logIn(formData.username, formData.password, {
-      success: function(user) {
-        // Do stuff after successful login.
+  Parse.User.logIn(formData.username, formData.password, {
+    success: function(user) {
+      // Do stuff after successful login.
 
-          sess.currentUser = Parse.User.current();
-          callback()
+      sess.currentUser = Parse.User.current();
+      callback()
 
     },
     error: function(user, error) {
@@ -417,437 +416,435 @@
   });
 
 
-  }
+}
 
-  function getCurrentUser (data, res, req, callback) {
-    sess=req.session;
+function getCurrentUser (data, res, req, callback) {
+  sess=req.session;
 
-    var dataStr = data.toString();
-    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+  var dataStr = data.toString();
+  dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
-    var classname = "User"
-    var currentUser = Parse.User.current();
+  var classname = "User"
+  var currentUser = Parse.User.current();
 
-      var foundRepeat  = false;
-    //if (currentUser) {
-    if (sess.currentUser) {
+  var foundRepeat  = false;
+  //if (currentUser) {
+  if (sess.currentUser) {
 
-      var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
+    var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
 
-      while( currentUserReg = re1.exec(dataStr) ) {
+    while( currentUserReg = re1.exec(dataStr) ) {
 
-          var re = /%(.*?)%/gi;
+      var re = /%(.*?)%/gi;
 
-        while( jsreap = re.exec(dataStr) ) {
+      while( jsreap = re.exec(dataStr) ) {
 
-          var res2 = jsreap[1].split(":");
+        var res2 = jsreap[1].split(":");
 
-          if (res2[0] == classname ) {
-
-
-            if (res2[1] == "id") {
-              dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
-            } else {
-              dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%",sess.currentUser[res2[1]]);
-            }
+        if (res2[0] == classname ) {
 
 
-
+          if (res2[1] == "id") {
+            dataStr = tdataStr.replace("%"+res2[0] + ":" +res2[1] + "%", currentUser.id );
+          } else {
+            dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%",sess.currentUser[res2[1]]);
           }
+
 
 
         }
-
-        foundRepeat = true;
-
-      }
-
-
-      if (foundRepeat) {
-
-        //dataStr = dataStr.replace("%if currentuser%", "" );
-        //dataStr = dataStr.replace("%endif%", "" );
-
-
-          var re1 = /(%if currentuser%)/g;
-          while( jsreap = re1.exec(dataStr) ) {
-
-              dataStr = dataStr.replace(re1 , "" );
-
-          }
-
-
-
-          var re3 = /(%else%)(.*?)(%endif%)/g;
-          while( jsreap = re3.exec(dataStr) ) {
-              dataStr = dataStr.replace(re3 , "" );
-          }
-
 
 
       }
 
-
-    } else {
-      // show the signup or login page
-
-      dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
-
-        var notElse = true;
-        var re1 = /(%if currentuser%)(.*?)(%else%)/g;
-
-        while( jsreap = re1.exec(dataStr) ) {
-            dataStr = dataStr.replace(re1 , "" );
-            notElse = false;
-        }
-
-        if (notElse) {
-            var re3 = /(%if currentuser%)(.*?)(%endif%)/g;
-          while( jsreap = re3.exec(dataStr) ) {
-              dataStr = dataStr.replace(re3 , "" );
-          }
-        } else {
-             var re3 = /(%endif%)/g;
-          while( jsreap = re3.exec(dataStr) ) {
-              dataStr = dataStr.replace(re3 , "" );
-          }
-        }
+      foundRepeat = true;
 
     }
 
-    data = dataStr;
 
-    callback(data);
+    if (foundRepeat) {
+
+      //dataStr = dataStr.replace("%if currentuser%", "" );
+      //dataStr = dataStr.replace("%endif%", "" );
+
+
+      var re1 = /(%if currentuser%)/g;
+      while( jsreap = re1.exec(dataStr) ) {
+
+        dataStr = dataStr.replace(re1 , "" );
+
+      }
+
+
+
+      var re3 = /(%else%)(.*?)(%endif%)/g;
+      while( jsreap = re3.exec(dataStr) ) {
+        dataStr = dataStr.replace(re3 , "" );
+      }
+
+
+
+    }
+
+
+  } else {
+    // show the signup or login page
+
+    dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
+
+    var notElse = true;
+    var re1 = /(%if currentuser%)(.*?)(%else%)/g;
+
+    while( jsreap = re1.exec(dataStr) ) {
+      dataStr = dataStr.replace(re1 , "" );
+      notElse = false;
+    }
+
+    if (notElse) {
+      var re3 = /(%if currentuser%)(.*?)(%endif%)/g;
+      while( jsreap = re3.exec(dataStr) ) {
+        dataStr = dataStr.replace(re3 , "" );
+      }
+    } else {
+      var re3 = /(%endif%)/g;
+      while( jsreap = re3.exec(dataStr) ) {
+        dataStr = dataStr.replace(re3 , "" );
+      }
+    }
+
   }
 
+  data = dataStr;
+
+  callback(data);
+}
+
 function getTemplate(data,req,res) {
-    sess=req.session;
-    
-    parseado = url.parse(req.url, true);
-    dir = parseado.pathname.split('/');
+  sess=req.session;
 
-    fs.readFile("template.html", 'utf8', function (err,templateData) {
-         
-          async.series(
-              [
-                  function(callback){
-                      getCurrentUser(templateData, res, req, function (newdata) { templateData = newdata; callback(null, 'one'); } );
-                  },
-                  function(callback){
-                      templateData = templateData.replace(/(\r\n|\n|\r)/gm,"");
-                      templateData =templateData.replace("%CONTENT%", data);
-                      callback(null, 'two');
-                  },
-                  function(callback){
-                      // arg1 now equals 'three'
-                      res.writeHead(200, {"Content-Type": "text/html"})
-                      res.write(templateData);
-                      res.end();
-                      callback(null, 'done');
-                  }
-              ]
-          );
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
 
-      });
+  fs.readFile("template.html", 'utf8', function (err,templateData) {
+
+    async.series(
+      [
+      function(callback){
+        getCurrentUser(templateData, res, req, function (newdata) { templateData = newdata; callback(null, 'one'); } );
+      },
+      function(callback){
+        templateData = templateData.replace(/(\r\n|\n|\r)/gm,"");
+        templateData =templateData.replace("%CONTENT%", data);
+        callback(null, 'two');
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        res.writeHead(200, {"Content-Type": "text/html"})
+        res.write(templateData);
+        res.end();
+        callback(null, 'done');
+      }
+      ]
+    );
+
+  });
 
 }
 
-  //Get
+//Get
 
-  //Root
-  app.get('/', function(req,res){
-    parseado = url.parse(req.url, true);
-    dir = parseado.pathname.split('/');
-
-
-    //res.render('index.html');
-    fs.readFile("index.html", 'utf8', function (err,data) {
-
-      async.series(
-        [function(callback){
-
-          getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
-        },
-        function(callback){
-          getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-        },
-        function(callback){
-          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
-        },
-        function(callback){
-          // arg1 now equals 'three'
-          getTemplate(data,req,res);
-
-          callback(null, 'done');
-        } ]
-      );
-
-    });
+//Root
+app.get('/', function(req,res){
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
 
 
-  });
+  //res.render('index.html');
+  fs.readFile("views/index.html", 'utf8', function (err,data) {
 
-  //Detail Event
-  app.get('/:type(event|page)/:id', function(req,res, next){
-    parseado = url.parse(req.url, true);
-    dir = parseado.pathname.split('/');
+    async.series(
+      [function(callback){
 
-      fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
+        getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
+      },
+      function(callback){
+        getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+      },
+      function(callback){
+        getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        getTemplate(data,req,res);
 
-              async.series([
-                function(callback){
-                  getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
-                },
-                function(callback){
-                  getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
-                },
-                function(callback){
-                  getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
-                },
-                function(callback){
-                  // arg1 now equals 'three'
-                    getTemplate(data,req,res);
-                    callback(null, 'done');
-                }
-                ]
-              );
-
-            });
-
-
+        callback(null, 'done');
+      } ]
+    );
 
   });
 
 
-  app.get('/eventadd', function(req,res){
-    parseado = url.parse(req.url, true);
-    dir = parseado.pathname.split('/');
+});
 
-      fs.readFile("addevent.html", 'utf8', function (err,data) {
-              
-              async.series(
-                  [
-                      function(callback){
-                          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'one'); } );
-                      },
-                      function(callback){
-                          getTemplate(data,req,res);
+//Detail Event
+app.get('/:type(event|page)/:id', function(req,res, next){
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
 
-                          callback(null, 'done');
-                      }
-                  ]
-              );
+  fs.readFile("views/" +dir[1] + ".html", 'utf8', function (err,data) {
+
+    async.series([
+      function(callback){
+        getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
+      },
+      function(callback){
+        getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+      },
+      function(callback){
+        getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        getTemplate(data,req,res);
+        callback(null, 'done');
+      }
+      ]
+    );
+
+  });
 
 
-          });
+
+});
+
+
+app.get('/eventadd', function(req,res){
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
+
+  fs.readFile("views/addevent.html", 'utf8', function (err,data) {
+
+    async.series(
+      [
+      function(callback){
+        getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'one'); } );
+      },
+      function(callback){
+        getTemplate(data,req,res);
+
+        callback(null, 'done');
+      }
+      ]
+    );
 
 
   });
 
-  //All other pages
-  app.get(/\/(login|signup)/, function(req,res){
 
-    parseado = url.parse(req.url, true);
-    dir = parseado.pathname.split('/');
+});
 
-    fs.readFile(dir[1] + ".html", 'utf8', function (err,data) {
+//All other pages
+app.get(/\/(login|signup)/, function(req,res){
 
+  parseado = url.parse(req.url, true);
+  dir = parseado.pathname.split('/');
 
-        async.series(
-                  [
-                      function(callback){
-                          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'two'); } );
-                      },
-                      function(callback){
-                          // arg1 now equals 'three'
-                          getTemplate(data,req,res);
-
-                          callback(null, 'done');
-                      }
-                  ]
-              );
+  fs.readFile("views/" + dir[1] + ".html", 'utf8', function (err,data) {
 
 
+    async.series(
+      [
+      function(callback){
+        getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'two'); } );
+      },
+      function(callback){
+        // arg1 now equals 'three'
+        getTemplate(data,req,res);
 
-    });
+        callback(null, 'done');
+      }
+      ]
+    );
+
+
+
   });
+});
 
-  //
-  app.get('/logout', function(req,res){
-      sess=req.session;
+//Logout
+app.get('/logout', function(req,res){
+  sess=req.session;
 
-      Parse.User.logOut();
+  Parse.User.logOut();
 
-      sess.currentUser = null;
+  sess.currentUser = null;
+  res.redirect('/');
+
+});
+
+
+//Post
+
+//Login
+app.post('/login', function(req,res) {
+  sess=req.session;
+  sess.userReq = req.body;
+  async.series([
+    function(callback){
+      setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
+
+
+    },
+    function(callback){
+
       res.redirect('/');
+      callback(null, 'done');
+    }
+    ]
+  );
 
-  });
+});
 
+//Signup
+app.post('/signup', function(req,res) {
+  sess=req.session;
+  sess.userReq = req.body;
 
+  async.series([
+    function(callback){
 
+      setSignup(res, sess.userReq, function () { callback(null, 'one') } )
 
-  //Post
-
-  //Login
-  app.post('/login', function(req,res) {
-    sess=req.session;
-    sess.userReq = req.body;
-    async.series([
-      function(callback){
-        setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
-
-
-      },
-      function(callback){
-
-        res.redirect('/');
-        callback(null, 'done');
-      }
-      ]
-    );
-
-  });
-
-  //Signup
-  app.post('/signup', function(req,res) {
-    sess=req.session;
-    sess.userReq = req.body;
-
-    async.series([
-      function(callback){
-
-        setSignup(res, sess.userReq, function () { callback(null, 'one') } )
-
-      },
-      function(callback){
-        setLogIn(res, sess.userReq,  function () { callback(null, 'two') } );
+    },
+    function(callback){
+      setLogIn(res, sess.userReq,  function () { callback(null, 'two') } );
 
 
-      },
-      function(callback){
+    },
+    function(callback){
 
-        res.redirect('/');
-        callback(null, 'done');
-      }
-      ]
-    );
+      res.redirect('/');
+      callback(null, 'done');
+    }
+    ]
+  );
 
-  });
+});
 
-  //Signup
-  app.post('/eventadd', function(req,res) {
-    sess=req.session;
-    sess.userReq = req.body;
+//Signup
+app.post('/eventadd', function(req,res) {
+  sess=req.session;
+  sess.userReq = req.body;
 
-      var userPA = "";
+  var userPA = "";
 
-      //var currentUser = Parse.User.current();
-      var banner = "";
-      var bannerMini = "";
+  //var currentUser = Parse.User.current();
+  var banner = "";
+  var bannerMini = "";
 
-      async.series([
-          function(callback){
+  async.series([
+    function(callback){
 
-          var query = new Parse.Query(Parse.User);
-          query.equalTo("username", sess.currentUser.username);  // find all the women
-          query.find({
-              success: function(userP) {
-                  // Do stuff
-                  userPA = userP[0];
-                  callback(null, 'one')
-              }
-          });
+      var query = new Parse.Query(Parse.User);
+      query.equalTo("username", sess.currentUser.username);  // find all the women
+      query.find({
+        success: function(userP) {
+          // Do stuff
+          userPA = userP[0];
+          callback(null, 'one')
+        }
+      });
 
 
 
-      },
+    },
 
-      function(callback){
+    function(callback){
 
-          fs.readFile(req.files.bannerMini.path, function (err, data) {
-              if (err) throw err;
+      fs.readFile(req.files.bannerMini.path, function (err, data) {
+        if (err) throw err;
 
-              var file = new Buffer(data).toString('base64')
-              var name = "bannerMini.jpg";
+        var file = new Buffer(data).toString('base64')
+        var name = "bannerMini.jpg";
 
-              bannerMini = new Parse.File(name, { base64: file });
+        bannerMini = new Parse.File(name, { base64: file });
 
-              bannerMini.save().then(function() {
-                  callback(null, 'two')
-              } , function(error) {
-                  // The file either could not be read, or could not be saved to Parse.
-                  console.log("Error: "+error.message);
-              });
-          });
-
-
-
-      },
-      function(callback){
-
-          fs.readFile(req.files.banner.path, function (err, data) {
-          if (err) throw err;
-
-          var file = new Buffer(data).toString('base64')
-          var name = "banner.jpg";
-
-          banner = new Parse.File(name, { base64: file });
-
-          banner.save().then(function() {
-              callback(null, 'three')
-
-          }, function(error) {
-              // The file either could not be read, or could not be saved to Parse.
-              console.log("Error: "+error.message);
-          });
-
-          });
+        bannerMini.save().then(function() {
+          callback(null, 'two')
+        } , function(error) {
+          // The file either could not be read, or could not be saved to Parse.
+          console.log("Error: "+error.message);
+        });
+      });
 
 
 
-      },
-      function(callback){
+    },
+    function(callback){
 
-          // The file has been saved to Parse.
-              var eventParse = Parse.Object.extend("Event");
-              var event = new eventParse();
+      fs.readFile(req.files.banner.path, function (err, data) {
+        if (err) throw err;
 
-              event.set("name", req.body.name);
-              event.set("description", req.body.description);
-              event.set("eventBriteUrl", req.body.eventurl);
-              event.set("date", new Date(req.body.year, Number(req.body.month) -1, req.body.day, 0,0,0,0) );
-              event.set("banner", banner);
-              event.set("bannerMini", bannerMini);
-              event.set("organizer", userPA);
+        var file = new Buffer(data).toString('base64')
+        var name = "banner.jpg";
 
-              event.save(null, {
-                success: function(eventSaved) {
-                  // Execute any logic that should take place after the object is saved.
-                    res.redirect('/');
-                    callback(null, 'done');
-                },
-                error: function(gameScore, error) {
-                  // Execute any logic that should take place if the save fails.
-                  // error is a Parse.Error with an error code and message.
-                  console.log('Failed to create new object, with error code: ' + error.message);
-                }
-              });
+        banner = new Parse.File(name, { base64: file });
+
+        banner.save().then(function() {
+          callback(null, 'three')
+
+        }, function(error) {
+          // The file either could not be read, or could not be saved to Parse.
+          console.log("Error: "+error.message);
+        });
+
+      });
 
 
 
-      }
-      ]
-    );
+    },
+    function(callback){
+
+      // The file has been saved to Parse.
+      var eventParse = Parse.Object.extend("Event");
+      var event = new eventParse();
+
+      event.set("name", req.body.name);
+      event.set("description", req.body.description);
+      event.set("eventBriteUrl", req.body.eventurl);
+      event.set("date", new Date(req.body.year, Number(req.body.month) -1, req.body.day, 0,0,0,0) );
+      event.set("banner", banner);
+      event.set("bannerMini", bannerMini);
+      event.set("organizer", userPA);
+
+      event.save(null, {
+        success: function(eventSaved) {
+          // Execute any logic that should take place after the object is saved.
+          res.redirect('/');
+          callback(null, 'done');
+        },
+        error: function(gameScore, error) {
+          // Execute any logic that should take place if the save fails.
+          // error is a Parse.Error with an error code and message.
+          console.log('Failed to create new object, with error code: ' + error.message);
+        }
+      });
 
 
-  });
+
+    }
+    ]
+  );
+
+
+});
 
 
 
-  app.listen( (process.env.PORT || 5000) ,function(){
-    console.log("Hello Cruel World");
-    console.log("Node app is running at localhost: 5000");
+app.listen( (process.env.PORT || 5000) ,function(){
+  console.log("Hello Cruel World");
+  console.log("Node app is running at localhost: 5000");
 
-    Parse.initialize(parseInit.appKeys.appid, parseInit.appKeys.jsid);
+  Parse.initialize(parseInit.appKeys.appid, parseInit.appKeys.jsid);
 
-  });
+});

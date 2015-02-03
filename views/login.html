@@ -1,0 +1,25 @@
+%if currentuser%
+<p>Ya iniciaste sesión, seguramente llegaste a esta página por error.</p>
+<p><a href="/">Regresá a la página principal</a></p>
+%else%
+<h3>Ingresar</h3>
+<form method="post" action="login">
+    <label>Usuario:</label>
+    <div>
+        <input type="text" placeholder="Usuario" name="username">
+    </div>
+
+    <label>Contraseña:</label>
+    <div>
+        <input type="password" placeholder="Contraseña" name="password">
+    </div>
+
+    <button type="submit">Ingresar</button>
+</form>
+
+<p>Si todavía no te has registrado, podés <a href="signup">crear una nueva cuenta</a></p>
+
+%endif%
+<script>
+    document.getElementsByTagName("main")[0].className = "login";
+</script>

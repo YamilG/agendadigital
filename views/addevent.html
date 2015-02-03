@@ -1,0 +1,113 @@
+<script>
+    function readURL(input, id) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            var width = (id == "banner") ? 350 : 100;
+            reader.onload = function (e) {
+                $('#' + id)
+                .attr('src', e.target.result)
+                .width(width)
+                .height("auto");
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+<h3>Agregar Evento</h3>
+
+<div class="events">
+
+    %if currentuser%
+    <form method="post" enctype="multipart/form-data">
+
+        <label>Event Name</label>
+        <div class="input-group input-group-lg">
+            <input type="text" name="name" value="" placeholder="Event name" />
+        </div>
+
+        <hr>
+
+        <label>Event description</label>
+        <div class="input-group input-group-lg">
+            <textarea  name="description" placeholder="Event description"></textarea>
+        </div>
+
+        <hr>
+
+        <label>Event banner</label>
+        <div class="input-group input-group-lg">
+            <img id="banner" src="http://placehold.it/350x150" alt="your image" />
+            <input type="file" name="banner" value=""  onchange="readURL(this,'banner');"  />
+        </div>
+
+        <hr>
+
+        <label>Event icon</label>
+        <div class="input-group input-group-lg">
+            <img id="bannerMini" src="http://placehold.it/100x100" alt="your image" />
+            <input type="file" name="bannerMini" value=""  onchange="readURL(this,'bannerMini');"/>
+        </div>
+
+        <hr>
+
+        <label>Date</label>
+        <select id="day" name="day">
+            <script>
+                for (i = 1; i <=31; i++) {
+                    var option = document.createElement("option");
+                    var t = document.createTextNode(i);
+                    option.appendChild(t);
+                    option.setAttribute("id",String(i));
+                    document.getElementById("day").appendChild(option);
+                }
+            </script>
+        </select>
+
+
+        <label>Month</label>
+        <select id="month" name="month">
+            <script>
+                for (i = 1; i <=12; i++) {
+                    var option = document.createElement("option");
+                    var t = document.createTextNode(i);
+                    option.appendChild(t);
+                    option.setAttribute("id",String(i));
+                    document.getElementById("month").appendChild(option);
+                }
+            </script>
+        </select>
+
+
+        <label>Year</label>
+        <select id="year" name="year">
+            <script>
+                for (i = 2015; i <=2016; i++) {
+                    var option = document.createElement("option");
+                    var t = document.createTextNode(i);
+                    option.appendChild(t);
+                    option.setAttribute("id",String(i));
+                    document.getElementById("year").appendChild(option);
+                }
+            </script>
+        </select>
+
+        <hr>
+
+        <label>Event URL</label>
+        <div class="input-group input-group-lg">
+            <input type="text" name="eventurl" value="" placeholder="http://" />
+        </div>
+
+        <hr>
+        <input type="submit" value="Save Event">
+
+    </form>
+    %else%
+    <p>Si todavía no te has registrado, podés <a href="signup">crear una nueva cuenta</a></p>
+    %endif%
+
+</div>
+
+
+</section>
