@@ -1,40 +1,3 @@
-<!doctype html>
-<html >
-  <head>
-      <meta charset="UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-      <meta name="description" content="Agenda Digital - Toda la información sobre los eventos de tecnología que ocurren en Honduras" />
-      <meta name="keywords" content="eventos, tecnología, Honduras, Tegucigalpa, San Pedro Sula, events, tech, startups, code, programming, design, diseño, programación" />
-      <title>Agenda Digital - %Event:name%</title>
-      <link rel="stylesheet" type="text/css" href="../css/main.css" />
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" >
-  </head>
-  <body>
-
-    %if currentuser%
-      <nav>
-          <a href="#">
-              <img src="../mr.png" />
-              <span>%User:name%</span>
-          </a>
-          <a href="logout">Logout</a>
-      </nav>
-    %else%
-    %endif%
-
-      <div class="container">
-          <header>
-        <section id="search-box">
-          <form method="get" action="#">
-            <input type="text" id="search" name="search" placeholder="Buscar..." />
-          </form>
-        </section>
-
-        <section id="logo">
-          <a href="/" style="color:#333"><h1>Agenda Digital</h1></a>
-        </section>
-      </header>
 
       <div class="thumbnail">
           <img src="%Event:banner:image%" />
@@ -52,18 +15,8 @@
           <hr>
           <div id="disqus_thread"></div>
       </div>
-      </div>
 
-      <footer>
-        <ul>
-          %if currentuser%
-          %else%
-          <li><a href="login">Ingresar</a></li>
-          <li><a href="signup">Registrarme como organizador</a></li>
-          %endif%
-          <li><a href="#">Contacto</a></li>
-        </ul>
-      </footer>
+
 
       <script type="text/javascript">
       var disqus_shortname = 'agendadigitalhn';
@@ -78,7 +31,4 @@
       </script>
       <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-
-
-  </body>
-</html>
+      

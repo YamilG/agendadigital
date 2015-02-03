@@ -20,6 +20,8 @@
   app.use(multer({ dest: './uploads/'}))
 
   app.set('views', __dirname + '/public');
+  app.use(express.static(__dirname + '/public'));
+
   app.engine('html', require('ejs').renderFile);
   app.engine('css', require('ejs').renderFile);
 
@@ -403,7 +405,6 @@
         // Do stuff after successful login.
 
           sess.currentUser = Parse.User.current();
-          console.log(sess.currentUser);
           callback()
 
     },
@@ -432,7 +433,6 @@
     if (sess.currentUser) {
 
       var re1 = /(%if currentuser%)(.*?)(%endif%)/g;
-      console.log("··")
 
       while( currentUserReg = re1.exec(dataStr) ) {
 
@@ -502,7 +502,6 @@
         }
 
         if (notElse) {
-            console.log("notElse");
             var re3 = /(%if currentuser%)(.*?)(%endif%)/g;
           while( jsreap = re3.exec(dataStr) ) {
               dataStr = dataStr.replace(re3 , "" );
@@ -521,7 +520,37 @@
     callback(data);
   }
 
+function getTemplate(data,req,res) {
+    sess=req.session;
+    
+    parseado = url.parse(req.url, true);
+    dir = parseado.pathname.split('/');
 
+    fs.readFile("template.html", 'utf8', function (err,templateData) {
+         
+          async.series(
+              [
+                  function(callback){
+                      getCurrentUser(templateData, res, req, function (newdata) { templateData = newdata; callback(null, 'one'); } );
+                  },
+                  function(callback){
+                      templateData = templateData.replace(/(\r\n|\n|\r)/gm,"");
+                      templateData =templateData.replace("%CONTENT%", data);
+                      callback(null, 'two');
+                  },
+                  function(callback){
+                      // arg1 now equals 'three'
+                      res.writeHead(200, {"Content-Type": "text/html"})
+                      res.write(templateData);
+                      res.end();
+                      callback(null, 'done');
+                  }
+              ]
+          );
+
+      });
+
+}
 
   //Get
 
@@ -536,24 +565,19 @@
 
       async.series(
         [function(callback){
-          res.writeHead(200, {"Content-Type": "text/html"})
 
-          callback(null, 'one');
+          getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'one'); } );
         },
         function(callback){
-
-          getEvents(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+          getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
         },
         function(callback){
-          getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'three'); } );
-        },
-        function(callback){
-          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'four'); } );
+          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
         },
         function(callback){
           // arg1 now equals 'three'
-          res.write(data);
-          res.end()
+          getTemplate(data,req,res);
+
           callback(null, 'done');
         } ]
       );
@@ -582,10 +606,8 @@
                 },
                 function(callback){
                   // arg1 now equals 'three'
-                  res.writeHead(200, {"Content-Type": "text/html"})
-                  res.write(data);
-                  res.end()
-                  callback(null, 'done');
+                    getTemplate(data,req,res);
+                    callback(null, 'done');
                 }
                 ]
               );
@@ -602,24 +624,15 @@
     dir = parseado.pathname.split('/');
 
       fs.readFile("addevent.html", 'utf8', function (err,data) {
-              /*
-              res.writeHead(200, {"Content-Type": "text/html"})
-              res.write(data);
-              res.end()
-              */
+              
               async.series(
                   [
                       function(callback){
-                          res.writeHead(200, {"Content-Type": "text/html"})
-                          callback(null, 'one');
+                          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'one'); } );
                       },
                       function(callback){
-                          getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'two'); } );
-                      },
-                      function(callback){
-                          // arg1 now equals 'three'
-                          res.write(data);
-                          res.end();
+                          getTemplate(data,req,res);
+
                           callback(null, 'done');
                       }
                   ]
@@ -647,9 +660,7 @@
                       },
                       function(callback){
                           // arg1 now equals 'three'
-                          res.writeHead(200, {"Content-Type": "text/html"})
-                          res.write(data);
-                          res.end()
+                          getTemplate(data,req,res);
 
                           callback(null, 'done');
                       }
@@ -672,20 +683,7 @@
 
   });
 
-  app.get('/index', function(req,res){
-    sess=req.session;
-    if(sess.email)
-    {
-      res.write('<h1>Hello '+sess.email+'</h1><br>');
-      res.end('<a href='+'/logout'+'>Logout</a>');
-    }
-    else
-    {
-      res.write('<h1>Please login first.</h1>');
-      res.end('<a href='+'/'+'>Login</a>');
-    }
 
-  });
 
 
   //Post
@@ -694,7 +692,6 @@
   app.post('/login', function(req,res) {
     sess=req.session;
     sess.userReq = req.body;
-    //console.log(requestBody);
     async.series([
       function(callback){
         setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
@@ -715,15 +712,11 @@
   app.post('/signup', function(req,res) {
     sess=req.session;
     sess.userReq = req.body;
-    //console.log(requestBody);
 
     async.series([
       function(callback){
 
         setSignup(res, sess.userReq, function () { callback(null, 'one') } )
-
-        //setLogIn(res, sess.userReq,  function () { callback(null, 'one') } );
-
 
       },
       function(callback){
@@ -761,8 +754,6 @@
               success: function(userP) {
                   // Do stuff
                   userPA = userP[0];
-                  console.log("!!!!");
-                  console.log(userPA);
                   callback(null, 'one')
               }
           });
@@ -832,7 +823,6 @@
               event.save(null, {
                 success: function(eventSaved) {
                   // Execute any logic that should take place after the object is saved.
-                  console.log('New object created with objectId: ' + eventSaved.id);
                     res.redirect('/');
                     callback(null, 'done');
                 },
@@ -860,16 +850,4 @@
 
     Parse.initialize(parseInit.appKeys.appid, parseInit.appKeys.jsid);
 
-      /*
-      fs.readFile("uploads/c217e352c9abad5d721e23d5ed3e8deb.png", function (err, data) {
-      if (err) throw err;
-
-      var file = "data: image/jpeg ;base64," + new Buffer(data).toString('base64')
-      console.log(file);
-      var name = "photo.jpg";
-
-      var bannerFile = new Parse.File(name, { base64: file });
-
-      });
-      */
   });

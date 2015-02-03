@@ -1,42 +1,4 @@
-<!DOCTYPE html>
-<html lang="es-419">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Agenda Digital - Toda la información sobre los eventos de tecnología que ocurren en Honduras" />
-    <meta name="keywords" content="eventos, tecnología, Honduras, Tegucigalpa, San Pedro Sula, events, tech, startups, code, programming, design, diseño, programación" />
-    <title>Agenda Digital</title>
-    <link rel="stylesheet" type="text/css" href="css/main.css" />
-  </head>
-  <body>
 
-    %if currentuser%
-      <nav>
-          <a href="eventadd">Add Event</a>
-          <a href="#">
-              <img src="mr.png" />
-              <span>%User:name%</span>
-          </a>
-          <a href="logout">Logout</a>
-      </nav>
-    %else%
-    %endif%
-
-    <div class="container">
-     <header>
-        <section id="search-box">
-          <form method="get" action="#">
-            <input type="text" id="search" name="search" placeholder="Buscar..." />
-          </form>
-        </section>
-
-        <section id="logo">
-          <img src="logo-agendadigital.svg" />
-        </section>
-      </header>
-
-      <main>
         <aside>
           <h3>Evento Destacado</h3>
 
@@ -93,27 +55,7 @@
           <a href="#" class="more"><button type="button" class="btn">Ver Todos</button></a>
 
         </section>
-      </main>
-    </div>
-
-    <footer>
-      <ul>
-        %if currentuser%
-        %else%
-        <li><a href="login">Ingresar</a></li>
-        <li><a href="signup">Registrarme como organizador</a></li>
-        %endif%
-        <li><a href="#">Contacto</a></li>
-      </ul>
-    </footer>
-
-  <script src="//use.typekit.net/sif5wrp.js"></script>
-  <script>try{Typekit.load();}catch(e){}</script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-  <script>
+<script>
       var img1 = "%Featured:banner:image%";
       var img2 = "%Featured:bannerMini:image%"
-  </script>
-  <script src="js/main.js"></script>
-  </body>
-</html>
+</script>

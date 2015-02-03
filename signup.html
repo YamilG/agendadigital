@@ -1,34 +1,5 @@
-<!DOCTYPE html>
-<html lang="es-419">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Registrate en Agenda Digital" />
-    <meta name="keywords" content="eventos, tecnología, Honduras, Tegucigalpa, San Pedro Sula, events, tech, startups, code, programming, design, diseño, programación" />
-    <title>Agenda Digital - Signup</title>
-    <link rel="stylesheet" type="text/css" href="css/main.css" />
 
-    <!-- this page shouldn't be indexed -->
-    <meta name="robots" content="noindex">
-    <meta name="googlebot" content="noindex">
-  </head>
-  <body>
-    <div class="container">
-     <header>
-        <section id="search-box">
-          <form method="get" action="#">
-            <input type="text" id="search" name="search" placeholder="Buscar..." />
-          </form>
-        </section>
-         
-        <section id="logo">
-          <h1>Agenda Digital</h1>
-        </section>
-      </header>
-
-      <main class="login">
-        %if currentuser%
+%if currentuser%
         <p>Ya tenés una cuenta y has iniciado sesión, seguramente llegaste a esta página por error.</p>
         <p><a href="/">Regresá a la página principal</a></p>
         %else%
@@ -59,18 +30,6 @@
           </form>
 
         %endif%
-      </main>
-    </div>
-
-    <footer>
-      <ul>
-        <li><a href="#">Contacto</a></li>
-      </ul>
-    </footer>
-
-  <script src="//use.typekit.net/sif5wrp.js"></script>
-  <script>try{Typekit.load();}catch(e){}</script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-  <script src="js/main.js"></script>
-  </body>
-</html>
+<script>
+    document.getElementsByTagName("main")[0].className = "login"
+</script>

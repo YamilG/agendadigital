@@ -12,11 +12,11 @@ $(function() {
     }
 
 	function checkMobile() {
-		if( screen.width <= 768 ) {
-			$('#featured-img').attr('src',img1);
+		if( window.innerWidth <= 768 ) {
+			$('#featured-img').attr('src', (img2 ? img2 : "" ) );
 			// alert('is mobile!');
 		} else { 
-			$('#featured-img').attr('src', img2);
+			$('#featured-img').attr('src', (img1 ? img1 : "" ) );
 			// alert('is not mobile!');
 		}
 	};
