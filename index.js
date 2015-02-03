@@ -139,18 +139,18 @@
                       tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].id );
                     } else if (res2[1] == "date") {
                     var month = new Array();
-                    month[0] = "January";
-                    month[1] = "February";
-                    month[2] = "March";
-                    month[3] = "April";
-                    month[4] = "May";
-                    month[5] = "June";
-                    month[6] = "July";
-                    month[7] = "August";
-                    month[8] = "September";
-                    month[9] = "October";
-                    month[10] = "November";
-                    month[11] = "December";
+                    month[0] = "Enero";
+                    month[1] = "Febrero";
+                    month[2] = "Marzo";
+                    month[3] = "Abril";
+                    month[4] = "Mayo";
+                    month[5] = "Junio";
+                    month[6] = "Julio";
+                    month[7] = "Agosto";
+                    month[8] = "Septiembre";
+                    month[9] = "Octubre";
+                    month[10] = "Noviembre";
+                    month[11] = "Diciembre";
 
                   tmpsPans[i] = tmpsPans[i].replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] + " " + events[i].get(res2[1]).getFullYear()  ): "" );
                     }  else {
@@ -191,6 +191,7 @@
           while( jsreap = re.exec(dataStr) ) {
             var res2 = jsreap[1].split(":");
 
+            if (res2[0] == "Event") {
             if (res2[2] == "image" ) {
 
               if (events[i].get(res2[1]) != null) {
@@ -212,15 +213,14 @@
               }
 
             }
-              else if (res2[2] == "User") {
+            else if (res2[2] == "User") {
 
                   if (events[i].get("organizer") != null) {
                    dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", events[i].get("organizer").get("name") );
                   } else {
                     dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + ":" + res2[2]+ "%", "" );
                   }
-
-          }
+            }
             else {
 
               //if (res2[1] != "repeat" && res2[1] != "endrepeat") {
@@ -231,18 +231,18 @@
               }
                 else if (res2[1] == "date") {
                   var month = new Array();
-                  month[0] = "January";
-                  month[1] = "February";
-                  month[2] = "March";
-                  month[3] = "April";
-                  month[4] = "May";
-                  month[5] = "June";
-                  month[6] = "July";
-                  month[7] = "August";
-                  month[8] = "September";
-                  month[9] = "October";
-                  month[10] = "November";
-                  month[11] = "December";
+                  month[0] = "Enero";
+                    month[1] = "Febrero";
+                    month[2] = "Marzo";
+                    month[3] = "Abril";
+                    month[4] = "Mayo";
+                    month[5] = "Junio";
+                    month[6] = "Julio";
+                    month[7] = "Agosto";
+                    month[8] = "Septiembre";
+                    month[9] = "Octubre";
+                    month[10] = "Noviembre";
+                    month[11] = "Diciembre";
 
                   dataStr = dataStr.replace("%"+res2[0] + ":" +res2[1] + "%", events[i].get(res2[1]) != null ? (events[i].get(res2[1]).getDate() + " de " +  month[events[i].get(res2[1]).getMonth()] ): "" );
               }
@@ -256,7 +256,7 @@
               //}
 
             }
-
+            }
           }
 
         }
@@ -576,6 +576,9 @@
                 },
                 function(callback){
                   getFeaturedEvent(dir[2], data, res, function (newdata) { data = newdata; callback(null, 'two'); } );
+                },
+                function(callback){
+                  getCurrentUser(data, res, req, function (newdata) { data = newdata; callback(null, 'three'); } );
                 },
                 function(callback){
                   // arg1 now equals 'three'
