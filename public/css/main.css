@@ -6,8 +6,22 @@ body {
   color: #333;
 }
 
+img {
+    object-fit: cover;
+}
+
 h1, h2, h3, h4, h5, h6, section button, #search-box input {
-  font-family: "ff-tisa-sans-web-pro", sans-serif;
+  font-family: "museo-sans-rounded", sans-serif;
+}
+
+#logo {
+  text-align: center;
+  padding: 20px 0;
+  padding-bottom: 30px;
+}
+
+#logo img {
+  max-width: 75%;
 }
 
 h1 {
@@ -50,7 +64,7 @@ a:focus {
   font-size: 18px;
   padding: 10px 5px;
   margin-top: 15px;
-  font-family: "ff-tisa-sans-web-pro", sans-serif;
+  font-family: "museo-sans-rounded", sans-serif;
   text-transform: uppercase;
 }
 
@@ -112,8 +126,8 @@ a .event:hover {
 }
 
 h3 {
-  background: #eee;
-  color: #6C6C6C;
+  background: #2A558C;
+  color: white;
   font-size: 12px;
   text-align: center;
   text-transform: uppercase;
@@ -220,11 +234,19 @@ nav a {
 @media (min-width: 768px) {
 
   body {
-    border-top: 5px solid gray;
+    border-top: 5px solid #F22E52;
   }
 
   nav {
     font-size: 14px;
+  }
+
+  #logo img {
+    height: 100px;
+  }
+
+  #logo {
+    padding-left: 0;
   }
 
   .events {
@@ -237,7 +259,7 @@ nav a {
   }
 
   .container {
-    max-width: 960px;
+    max-width: 1100px;
     margin: 0 auto;
   }
 
@@ -259,7 +281,7 @@ nav a {
     padding-left: 15px;
   }
 
-  #logo h1 {
+  #logo {
     text-align: left;
   }
 
@@ -329,9 +351,6 @@ nav a {
 }
 
 @media (min-width: 992px) {
-  .container {
-    max-width: 100%;
-  }
 
   .login {
     width: 45%;
@@ -383,12 +402,16 @@ nav a {
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   main ul li {
     width: 33.333333%;
   }
 
   main ul li:nth-child(odd){
     margin-right: 0;
+  }
+
+  .info {
+    width: 60%;
   }
 }
