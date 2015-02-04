@@ -1,7 +1,11 @@
 <div class="thumbnail">
     <img src="%Event:banner:image%" />
     <h1>%Event:name%</h1>
-    <p>%Event:date%</p>
+    <a id="userurl">
+        <h2>%Event:name:organizer%</h2>
+    </a>
+    
+    <p>%Event:date:date%</p>
     <p>%Event:description%</p>
     <p><a href="%Event:eventbriteUrl%">%Event:eventbriteUrl%</a></p>
 
@@ -15,7 +19,10 @@
     <div id="disqus_thread"></div>
 </div>
 
-
+<script>
+    var userurl = "%Event:username:organizer%";
+    document.getElementById("userurl").href = "/user/"+userurl;
+</script>
 
 <script type="text/javascript">
     var disqus_shortname = 'agendadigitalhn';

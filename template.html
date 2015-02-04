@@ -6,14 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Agenda Digital - Toda la información sobre los eventos de tecnología que ocurren en Honduras" />
     <meta name="keywords" content="eventos, tecnología, Honduras, Tegucigalpa, San Pedro Sula, events, tech, startups, code, programming, design, diseño, programación" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Agenda Digital</title>
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="apple-touch-icon" href="/icon.png">
+    <script src="/js/ios-links.js"></script>
+    <script>
+        var img1 = "";
+        var img2 = "";
+    </script>
   </head>
   <body>
 
     %if currentuser%
       <nav>
-          <a href="eventadd">Add Event</a>
+          <a href="event/add">Add Event</a>
           <a href="#">
               <img src="/mr.png" />
               <span>%User:name%</span>
@@ -58,6 +65,6 @@
   <script>try{Typekit.load();}catch(e){}</script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   
-  <script src="js/main.js"></script>
+  <script src="/js/main.js"></script>
   </body>
 </html>
