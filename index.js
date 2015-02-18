@@ -739,7 +739,7 @@ app.post('/signup', function(req,res) {
 });
 
 //Signup
-app.post('/eventadd', function(req,res) {
+app.post('/event/add', function(req,res) {
     sess=req.session;
     sess.userReq = req.body;
 
