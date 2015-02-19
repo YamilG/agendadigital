@@ -6,12 +6,12 @@ body {
   color: #333;
 }
 
-img {
-    object-fit: cover;
-}
-
 h1, h2, h3, h4, h5, h6, section button, #search-box input {
   font-family: "museo-sans-rounded", sans-serif;
+}
+
+img {
+    object-fit: cover;
 }
 
 #logo {
@@ -78,11 +78,6 @@ main ul li a {
   display: block;
 }
 
-p.organizer {
-  margin: 0;
-  padding-top: 10px;
-}
-
 .event-avatar {
   width: 90px;
   height: 90px;
@@ -94,13 +89,29 @@ p.organizer {
   overflow: hidden;
 }
 
-.event-avatar img{
-    width: 100%;
+.event-avatar img {
+  width: auto;
+  height: 100%;
 }
 
 .info {
   float: left;
   width: 60%;
+}
+
+.info h2 {
+  line-height: 1.4em;
+}
+
+.info p.organizer {
+  font-size: 12px;
+  margin: 0;
+}
+
+.info p.date {
+  margin: 0;
+  padding: 0;
+  padding: 5px 0;
 }
 
 .event {
@@ -179,6 +190,10 @@ footer ul {
 footer ul li a {
   display: block;
   padding: 10px 0;
+}
+
+#search-box form {
+  margin-top: 20px;
 }
 
 #search-box input {
