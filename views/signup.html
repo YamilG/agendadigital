@@ -3,32 +3,70 @@
 <p><a href="/">Regresá a la página principal</a></p>
 %else%
 <h3>Registro</h3>
-<form method="post" action="signup">
+<form method="post" action="signup" id='signup-form'>
 
     <label>Nombre:</label>
     <div>
-        <input type="text" placeholder="Nombre de organizador" name="name">
+        <input type="text" placeholder="Nombre de organizador" name="name" id='signup-organizer-name' pattern="^(?!\s*$).+">
+        <span title="Nombre de organizacion invalido, no puede ser vacio" id='signup-error-organizer-name' class='signup-error-message'></span>
     </div>
 
     <label>Usuario:</label>
     <div>
-        <input type="text" placeholder="Nombre de usuario" name="username">
+        <input type="text" placeholder="Nombre de usuario" name="username" id='signup-username' pattern="^[a-zA-Z0-9]+$">
+        <span title="Solo se aceptan valores alfanumericos" id='signup-error-username' class='signup-error-message'></span>
     </div>
 
     <label>Correo Electrónico:</label>
     <div>
-        <input type="email" placeholder="Correo Electrónico" name="email">
+        <input type="email" placeholder="Correo Electrónico" name="email" id='signup-email'>
+        <span title="Email no valido" id='signup-error-email' class='signup-error-message'></span>
     </div>
 
     <label>Contraseña:</label>
     <div>
-        <input type="password" placeholder="Contraseña" name="password">
+        <input type="password" placeholder="Contraseña"  name='password' id="signup-password" pattern="^(?!\s*$).+">
+        <span title="Contraseña inválida, campo es requerido" id='signup-error-password' class='signup-error-message'></span>
     </div>
-
-    <button type="submit">Crear cuenta</button>
+    <button onclick="validateForm()">Crear cuenta</button>
 </form>
-
 %endif%
-<script>
+
+<script type='text/javascript'>
+	function validateForm() {
+		var validForm = true;
+
+		if (document.getElementById('signup-organizer-name').value === '' || !/([^\s])/.test(document.getElementById('signup-organizer-name').value)) {
+			document.getElementById('signup-organizer-name').setCustomValidity('error');
+			validForm = false;
+		} else {
+			document.getElementById('signup-organizer-name').setCustomValidity('');
+		}
+
+		if (document.getElementById('signup-username').value === '' || !/^[a-zA-Z0-9]+$/.test(document.getElementById('signup-username').value)) {
+			document.getElementById('signup-username').setCustomValidity('error');
+			validForm = false;
+		} else {
+			document.getElementById('signup-username').setCustomValidity('');
+		}
+
+		if (document.getElementById('signup-email').value === '' || !/[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm.test(document.getElementById('signup-email').value)) {
+			document.getElementById('signup-email').setCustomValidity('error');
+			validForm = false;
+		} else {
+			document.getElementById('signup-email').setCustomValidity('');
+		}
+
+		if (document.getElementById('signup-password').value === '' || !/([^\s])/.test(document.getElementById('signup-password').value)) {
+			document.getElementById('signup-password').setCustomValidity('error');
+			validForm = false;
+		} else {
+			document.getElementById('signup-password').setCustomValidity('');
+		}
+
+		if (validForm) {
+			document.getElementById('signup-form').submit();
+		};
+	}
     document.getElementsByTagName("main")[0].className = "login"
 </script>

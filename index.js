@@ -1,4 +1,4 @@
-var url = require('url');
+nvar url = require('url');
 var http = require('http');
 var fs = require('fs');
 var replace = require("replace");
@@ -276,30 +276,64 @@ function getFeaturedEvent(eventId, data, res, callback) {
     });
 }
 
+function validateField(regexp, field, errorMessage) {
+	return {
+		validField: regexp.test(field),
+		errorMessage: errorMessage
+	};
+}
+
 function setSignup(res, formData, callback) {
 
-    var user = new Parse.User();
-    user.set("username", formData.username);
-    user.set("password", formData.password);
-    user.set("email", formData.email);
+	var user = new Parse.User();
+	var validFields = true;
 
-    // other fields can be set just like with Parse.Object
-    user.set("name", formData.name);
+	user.set("username", formData.username);
+	user.set("password", formData.password);
+	user.set("email", formData.email);
 
+	// other fields can be set just like with Parse.Object
+	user.set("name", formData.name);
 
-    user.signUp(null, {
-        success: function(user) {
-            // Hooray! Let them use the app now.
-            callback();
-        },
-        error: function(user, error) {
-            // Show the error message somewhere and let the user try again.
-            console.log("Error: " + error.code + " " + error.message);
-            res.write("Error: " + error.code + " " + error.message);
-            res.end()
-        }
-    });
+	var validName = validateField(/([^\s])/, formData.name, 'Error: Nombre no puede ser vacio');
+	var validUsername = validateField(/^[a-zA-Z0-9]+$/, formData.username, 'Error: Solo se aceptan valores alfanumericos para el usuario');
+	var validPassword = validateField(/([^\s])/, formData.password, 'Error: Contraseña no puede ser vacia');
+	var validEmail = validateField(/[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm, formData.email, 'Error: Email invalido');
 
+	if (!validUsername.validField) {
+		res.write(validUsername.errorMessage);
+		validFields = false;
+	}
+
+	if (!validName.validField) {
+		res.write(validName.errorMessage);
+		validFields = false;
+	}
+
+	if (!validPassword.validField) {
+		res.write(validPassword.errorMessage);
+		validFields = false;
+	}
+
+	if (!validEmail.validField) {
+		res.write(validEmail.errorMessage);
+		validFields = false;
+	} 
+
+	if(validFields){
+		user.signUp(null, {
+			success: function(user) {
+				// Hooray! Let them use the app now.
+				callback();
+			},
+			error: function(user, error) {
+				// Show the error message somewhere and let the user try again.
+				console.log("Error: " + error.code + " " + error.message);
+				res.write("Error: " + error.code + " " + error.message);
+				res.end()
+			}
+		});
+	}
 }
 
 function setLogIn( res, formData, callback) {

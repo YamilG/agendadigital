@@ -181,6 +181,17 @@ footer ul li a {
   padding: 10px 0;
 }
 
+input ~ span.signup-error-message:after { 
+	content: attr(title); color: red; 
+	margin-left: 0.6rem; 
+	opacity: 0;
+	transition: opacity 1s 1s;
+}
+
+input:invalid ~ span.signup-error-message:after { 
+	opacity: 1; 
+}
+
 #search-box input {
   width: 100%;
   padding: 10px 5px;
