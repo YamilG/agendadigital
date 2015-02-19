@@ -1,4 +1,4 @@
-nvar url = require('url');
+var url = require('url');
 var http = require('http');
 var fs = require('fs');
 var replace = require("replace");
