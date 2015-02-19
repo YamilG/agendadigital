@@ -243,7 +243,6 @@ function getFeaturedEvent(eventId, data, res, callback) {
     var dataStr = data.toString();
     dataStr = dataStr.replace(/(\r\n|\n|\r)/gm,"");
 
-
     var classname = "Featured";
 
     var eventT = Parse.Object.extend(classname);
@@ -259,12 +258,13 @@ function getFeaturedEvent(eventId, data, res, callback) {
         success: function(events) {
 
             //data Value
-            if (events.length == 0) {callback(dataStr); return;}
-
+            if (events.length == 0) {
+                callback(dataStr);
+                return;
+            }
+            events[0].get("event").attributes.description = events[0].get("event").attributes.description.substring(0, 120) + '...';
             dataStr = changeValuesWithParseObject(data, "Featured", events[0].get("event"));
-
             callback(dataStr);
-
         },
         error: function(error) {
             console.log("Error")
