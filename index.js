@@ -818,7 +818,7 @@ app.post('/event/add', function(req,res) {
 
             event.set("name", req.body.name);
             event.set("description", req.body.description);
-            event.set("eventBriteUrl", req.body.eventurl);
+            event.set("eventbriteUrl", req.body.eventurl);
             event.set("date", new Date(req.body.year, Number(req.body.month) -1, req.body.day, 0,0,0,0) );
             event.set("banner", banner);
             event.set("bannerMini", bannerMini);
